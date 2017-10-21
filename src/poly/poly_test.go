@@ -2,6 +2,7 @@ package poly
 
 import (
   "testing"
+	"params"
 )
 
 func TestNewPolynomial(t *testing.T) {
@@ -38,3 +39,27 @@ func TestNewPolynomial(t *testing.T) {
 }
 
 
+func TestNew(t *testing.T) {
+  var polynomial *Polynomial
+  var err error
+  polynomial,err = New(params.BLISS_B_0)
+  if polynomial == nil || err != nil {
+		t.Errorf("Failed to create modular polynomial for BLISS_B_0: %s\n",err.Error())
+  }
+  polynomial,err = New(params.BLISS_B_1)
+  if polynomial == nil || err != nil {
+		t.Errorf("Failed to create modular polynomial for BLISS_B_1: %s\n",err.Error())
+  }
+  polynomial,err = New(params.BLISS_B_2)
+  if polynomial == nil || err != nil {
+		t.Errorf("Failed to create modular polynomial for BLISS_B_2: %s\n",err.Error())
+  }
+  polynomial,err = New(params.BLISS_B_3)
+  if polynomial == nil || err != nil {
+		t.Errorf("Failed to create modular polynomial for BLISS_B_3: %s\n",err.Error())
+  }
+  polynomial,err = New(params.BLISS_B_4)
+  if polynomial == nil || err != nil {
+		t.Errorf("Failed to create modular polynomial for BLISS_B_4: %s\n",err.Error())
+  }
+}
