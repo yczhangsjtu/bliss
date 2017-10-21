@@ -91,3 +91,18 @@ func (p *Polynomial) FFT() (*ModularArray,error) {
 
 	return array,nil
 }
+
+func (p *Polynomial) NTT() (*NTT,error) {
+	psi,err := NewModularArray(p.n,p.q)
+	if err != nil {
+		return nil,err
+	}
+	psi.SetData(p.param.Psi)
+	f := Polynomial{p.Times(psi),p.param}
+	g,err := f.FFT()
+	if err != nil {
+		return nil,err
+	}
+	ntt := NTT{g,p.param}
+	return &ntt,nil
+}
