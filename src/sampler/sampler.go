@@ -86,3 +86,24 @@ func (sampler *Sampler) SampleBerExp(x uint32) bool {
 	}
 	return true
 }
+
+// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2))
+func (sampler *Sampler) SampleBerCosh(x int32) bool {
+	if x < 0 {
+		x = -x
+	}
+	x <<= 1
+	for {
+		bit := sampler.SampleBerExp(uint32(x))
+		if bit {
+			return true
+		}
+		bit = sampler.random.Bit()
+		if !bit {
+			bit = sampler.SampleBerExp(uint32(x))
+			if !bit {
+				return false
+			}
+		}
+	}
+}
