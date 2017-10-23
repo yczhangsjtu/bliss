@@ -23,7 +23,7 @@ type BlissBParam struct {
 	Bl2     uint32  /* L2 norm  */
 	Nz1     uint32  /* nonzero +-1  aka delta_1*n in L Ducas' Bliss-B paper */
 	Nz2     uint32  /* nonzero +-2  aka delta_2*n  in L Ducas' Bliss-B paper */
-	sigma   uint32  /* standard deviation  */
+	Sigma   uint32  /* standard deviation  */
 	M       uint32  /*  We use P_{max} given on page 7 of L Ducas' Bliss-B paper */
 	RR      float64 /* repetition rate  */
 	Psi     []int32 /* n roots of unity (mod q)  */
