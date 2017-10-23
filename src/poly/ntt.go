@@ -46,3 +46,13 @@ func (ntt *NTT) Poly() (*Polynomial,error) {
 	p := Polynomial{f,ntt.param}
 	return &p,nil
 }
+
+func (ntt *NTT) Invert() (*NTT,error) {
+	for i := 0; i < int(ntt.n); i++ {
+		if ntt.data[i] == 0 {
+			return nil,errors.New("Polynomial not invertible")
+		}
+	}
+	ret := NTT{ntt.Exp(ntt.q-2),ntt.param}
+	return &ret,nil
+}
