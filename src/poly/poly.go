@@ -2,6 +2,7 @@ package poly
 
 import (
 	"errors"
+	"sampler"
 	"params"
 )
 
@@ -56,4 +57,33 @@ func (p *Polynomial) NTT() (*NTT,error) {
 	}
 	ntt := NTT{g,p.param}
 	return &ntt,nil
+}
+
+func UniformPoly(version int, entropy *sampler.Entropy) *Polynomial {
+	p,err := New(version)
+	if err != nil {
+		return nil
+	}
+	n := p.param.N
+	v := make([]int32,n)
+
+	i := 0
+	for i < int(p.param.Nz1) {
+		x := entropy.Uint16()
+		j := uint32(x >> 1) % n
+		mask := -(1^(v[j]&1))
+		i += int(mask&1)
+		v[j] += (int32((x&1)<<1)-1)&mask
+	}
+
+	i = 0
+	for i < int(p.param.Nz2) {
+		x := entropy.Uint16()
+		j := uint32(x >> 1) % n
+		mask := -(1^((v[j]&1)|((v[j]&2)>>1)))
+		i += int(mask&1)
+		v[j] += (int32((x&1)<<2)-2)&mask
+	}
+	p.SetData(v)
+	return p
 }
