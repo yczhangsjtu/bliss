@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"params"
+	"fmt"
 )
 
 func TestSampleBer(t *testing.T) {
@@ -73,6 +74,29 @@ func TestSampleBerCosh(t *testing.T) {
 		bit := sampler.SampleBerCosh(int32(i * 200))
 		if (bit && vs[i] == "0") || (!bit && vs[i] == "1") {
 			t.Errorf("Error in sampleBerCosh: expect %s", vs[i])
+		}
+	}
+}
+
+func TestSampleBinaryGauss(t *testing.T) {
+	testfile,err := ioutil.ReadFile("test_data/sampler_binary_gauss_test")
+	if err != nil {
+		t.Errorf("Failed to open file: %s",err.Error())
+	}
+	filecontent := strings.TrimSpace(string(testfile))
+	vs := strings.Split(filecontent," ")
+	seed := make([]uint8,SHA_512_DIGEST_LENGTH)
+	for i := 0; i < len(seed); i++ {
+		seed[i] = uint8(i % 8)
+	}
+	sampler,err := New(params.BLISS_B_4,seed)
+	if err != nil {
+		t.Errorf("Failed to create sampler: %s",err.Error())
+	}
+	for i := 0; i < 512; i++ {
+		res := fmt.Sprintf("%d",sampler.SampleBinaryGauss())
+		if res != vs[i] {
+			t.Errorf("Error in sampleBinaryGauss: expect %s, got %s", vs[i],res)
 		}
 	}
 }

@@ -87,7 +87,7 @@ func (sampler *Sampler) SampleBerExp(x uint32) bool {
 	return true
 }
 
-// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2))
+// Sample Bernoulli distribution with probability p = 1/cosh(-x/(2*sigma^2))
 func (sampler *Sampler) SampleBerCosh(x int32) bool {
 	if x < 0 {
 		x = -x
@@ -106,4 +106,24 @@ func (sampler *Sampler) SampleBerCosh(x int32) bool {
 			}
 		}
 	}
+}
+
+// Discrete Binary Gauss distribution is Discrete Gauss Distribution with
+// a specific variance sigma = sqrt(1/(2 ln 2)) = 0.849...
+// This is used as foundation of SampleGauss.
+func (sampler *Sampler) SampleBinaryGauss() uint32 {
+restart:
+	if sampler.random.Bit() {
+		return 0
+	}
+	for i := 1; i <= 16; i++ {
+		u := sampler.random.Bits(2*i - 1)
+		if u == 0 {
+			return uint32(i)
+		}
+		if u != 1 {
+			goto restart
+		}
+	}
+	return 0
 }
