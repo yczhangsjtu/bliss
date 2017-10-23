@@ -2,8 +2,6 @@ package sampler
 
 import (
 	"fmt"
-	"time"
-	"math/rand"
 	"params"
 )
 
@@ -19,14 +17,14 @@ type Sampler struct {
 	ctable   []uint8
 	cdttable []uint8
 
-	random *rand.Rand
+	random *Entropy
 }
 
 func invalidSampler() *Sampler {
 	return &Sampler{0,0,0,0,0,0,[]uint8{},[]uint8{},nil}
 }
 
-func NewSampler(sigma,ell,prec uint32) (*Sampler, error) {
+func NewSampler(sigma,ell,prec uint32, seed []uint8) (*Sampler, error) {
 	columns := prec/8
 	ctable,err := getTable(sigma,ell,prec)
 	if err != nil {
@@ -40,16 +38,19 @@ func NewSampler(sigma,ell,prec uint32) (*Sampler, error) {
 	if ksigmabits == 0 {
 		return invalidSampler(),fmt.Errorf("Failed to get kSigmaBits")
 	}
-	random := rand.New(rand.NewSource(time.Now().Unix()))
+	random, err := NewEntropy(seed)
+	if err != nil {
+		return invalidSampler(),err
+	}
 	return &Sampler{sigma,ell,prec,columns,ksigma,ksigmabits,ctable,[]uint8{},random},nil
 }
 
-func New(version int) (*Sampler, error) {
+func New(version int, seed []uint8) (*Sampler, error) {
 	param := params.GetParam(version)
 	if param == nil {
 		return nil,fmt.Errorf("Failed to get parameter")
 	}
-	return NewSampler(param.Sigma,param.Ell,param.Prec)
+	return NewSampler(param.Sigma,param.Ell,param.Prec,seed)
 }
 
 // Sample Bernoulli distribution with probability p
@@ -58,7 +59,7 @@ func New(version int) (*Sampler, error) {
 // bits of p
 func (sampler *Sampler) sampleBer(p []uint8) bool {
 	for _,pi := range p {
-		uc := uint8(sampler.random.Uint32() & 0xff)
+		uc := sampler.random.Char()
 		if uc < pi {
 			return true
 		}
