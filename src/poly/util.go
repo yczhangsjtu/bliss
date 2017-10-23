@@ -19,6 +19,10 @@ func mulMod(a,b int32, q uint32) int32 {
   return a + (int32)((uint32)(a>>31) & q)
 }
 
+func bound(a int32, q uint32) int32 {
+  return a + (int32)((uint32)(a>>31) & q)
+}
+
 func expMod(a int32, e,q uint32) int32 {
   var y int32
   y = 1

@@ -30,3 +30,19 @@ func NewNTT(param *params.BlissBParam) (*NTT, error) {
 	ntt.param = param
 	return ntt,err
 }
+
+func (ntt *NTT) Poly() (*Polynomial,error) {
+	rpsi,err := NewModularArray(ntt.n,ntt.q)
+	rpsi.SetData(ntt.param.RPsi)
+	if err != nil {
+		return nil,err
+	}
+	f,err := ntt.fft(ntt.param)
+	if err != nil {
+		return nil,err
+	}
+	f.Mul(rpsi)
+	f.flip()
+	p := Polynomial{f,ntt.param}
+	return &p,nil
+}

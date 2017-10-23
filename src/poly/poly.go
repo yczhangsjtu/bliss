@@ -40,56 +40,7 @@ func New(version int) (*Polynomial, error) {
 }
 
 func (p *Polynomial) FFT() (*ModularArray,error) {
-	var i,j,k uint32
-	n := p.param.N
-	q := p.param.Q
-	psi := p.param.Psi
-	array,err := NewModularArray(n,q)
-	if err != nil {
-		return nil,err
-	}
-	array.SetData(p.data)
-	v := array.data
-
-	// Bit-Inverse Shuffle
-	j = n >> 1
-	for i = 1; i < n-1; i++ {
-		if i < j {
-			tmp := v[i]
-			v[i] = v[j]
-			v[j] = tmp
-		}
-		k := n
-		for {
-			k >>= 1
-			j ^= k
-			if (j&k)!=0 {
-				break
-			}
-		}
-	}
-
-	// Main loop
-	l := n
-	for i = 1; i < n; i <<= 1 {
-		i2 := i + i
-		for k = 0; k < n; k += i2 {
-			tmp := v[k+i]
-			v[k+i] = subMod(v[k],tmp,q)
-			v[k] = addMod(v[k],tmp,q)
-		}
-		for j = 1; j < i; j++ {
-			y := psi[j * l]
-			for k = j; k < n; k += i2 {
-				tmp := (v[k+i] * y) % int32(q)
-				v[k+i] = subMod(v[k],tmp,q)
-				v[k] = addMod(v[k],tmp,q)
-			}
-		}
-		l >>= 1
-	}
-
-	return array,nil
+	return p.fft(p.param)
 }
 
 func (p *Polynomial) NTT() (*NTT,error) {

@@ -235,3 +235,21 @@ func TestModularArrayFlip(t *testing.T) {
     }
   }
 }
+
+func TestModularArrayBound(t *testing.T) {
+  fdata := []int32{0,-1,-2,3,-4,5,-6,5,-4,3}
+  hdata := []int32{0, 6, 5,3, 3,5, 1,5, 3,3}
+  f,_ := NewModularArray(10,7)
+  f.SetData(fdata)
+  f.bound()
+  res := f.GetData()
+  if len(hdata) != len(res) {
+    t.Errorf("Error in computing f.flip(): incorrect length %d", len(res))
+  }
+  for i := 0; i < len(hdata); i++ {
+    if hdata[i] != res[i] {
+      t.Errorf("Error in computing f.flip(): %d != %d at pos %d",
+        hdata[i],res[i],i)
+    }
+  }
+}
