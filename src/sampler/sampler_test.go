@@ -100,3 +100,26 @@ func TestSampleBinaryGauss(t *testing.T) {
 		}
 	}
 }
+
+func TestSampleGauss(t *testing.T) {
+	testfile,err := ioutil.ReadFile("test_data/sampler_gauss_test")
+	if err != nil {
+		t.Errorf("Failed to open file: %s",err.Error())
+	}
+	filecontent := strings.TrimSpace(string(testfile))
+	vs := strings.Split(filecontent," ")
+	seed := make([]uint8,SHA_512_DIGEST_LENGTH)
+	for i := 0; i < len(seed); i++ {
+		seed[i] = uint8(i % 8)
+	}
+	sampler,err := New(params.BLISS_B_4,seed)
+	if err != nil {
+		t.Errorf("Failed to create sampler: %s",err.Error())
+	}
+	for i := 0; i < 512; i++ {
+		res := fmt.Sprintf("%d",sampler.SampleGauss())
+		if res != vs[i] {
+			t.Errorf("Error in sampleGauss: expect %s, got %s", vs[i],res)
+		}
+	}
+}

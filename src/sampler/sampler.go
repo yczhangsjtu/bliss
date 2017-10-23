@@ -127,3 +127,33 @@ restart:
 	}
 	return 0
 }
+
+// Sample according to Discrete Gauss Distribution
+// exp(-x^2/(2*sigma*sigma))
+func (sampler *Sampler) SampleGauss() int32 {
+	var x,y uint32
+	var u bool
+	for {
+		x = sampler.SampleBinaryGauss()
+		for {
+			y = sampler.random.Bits(int(sampler.kSigmaBits))
+			if y < uint32(sampler.kSigma) {
+				break
+			}
+		}
+		e := y * (y + 2 * uint32(sampler.kSigma) * x)
+		u = sampler.random.Bit()
+		if (x | y) != 0 || u {
+			if sampler.SampleBerExp(e) {
+				break
+			}
+		}
+	}
+
+	valPos := int32(uint32(sampler.kSigma) * x + y)
+	if u {
+		return valPos
+	} else {
+		return -valPos
+	}
+}
