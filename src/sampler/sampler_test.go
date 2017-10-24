@@ -20,7 +20,11 @@ func TestSampleBer(t *testing.T) {
 	for i := 0; i < len(seed); i++ {
 		seed[i] = uint8(i % 8)
 	}
-	sampler,err := New(params.BLISS_B_4,seed)
+	entropy,err := NewEntropy(seed)
+	if err != nil {
+		t.Errorf("Failed to create entropy: %s",err.Error())
+	}
+	sampler,err := New(params.BLISS_B_4,entropy)
 	if err != nil {
 		t.Errorf("Failed to create sampler: %s",err.Error())
 	}
@@ -43,7 +47,11 @@ func TestSampleBerExp(t *testing.T) {
 	for i := 0; i < len(seed); i++ {
 		seed[i] = uint8(i % 8)
 	}
-	sampler,err := New(params.BLISS_B_4,seed)
+	entropy,err := NewEntropy(seed)
+	if err != nil {
+		t.Errorf("Failed to create entropy: %s",err.Error())
+	}
+	sampler,err := New(params.BLISS_B_4,entropy)
 	if err != nil {
 		t.Errorf("Failed to create sampler: %s",err.Error())
 	}
@@ -66,7 +74,11 @@ func TestSampleBerCosh(t *testing.T) {
 	for i := 0; i < len(seed); i++ {
 		seed[i] = uint8(i % 8)
 	}
-	sampler,err := New(params.BLISS_B_4,seed)
+	entropy,err := NewEntropy(seed)
+	if err != nil {
+		t.Errorf("Failed to create entropy: %s",err.Error())
+	}
+	sampler,err := New(params.BLISS_B_4,entropy)
 	if err != nil {
 		t.Errorf("Failed to create sampler: %s",err.Error())
 	}
@@ -89,7 +101,11 @@ func TestSampleBinaryGauss(t *testing.T) {
 	for i := 0; i < len(seed); i++ {
 		seed[i] = uint8(i % 8)
 	}
-	sampler,err := New(params.BLISS_B_4,seed)
+	entropy,err := NewEntropy(seed)
+	if err != nil {
+		t.Errorf("Failed to create entropy: %s",err.Error())
+	}
+	sampler,err := New(params.BLISS_B_4,entropy)
 	if err != nil {
 		t.Errorf("Failed to create sampler: %s",err.Error())
 	}
@@ -112,7 +128,11 @@ func TestSampleGauss(t *testing.T) {
 	for i := 0; i < len(seed); i++ {
 		seed[i] = uint8(i % 8)
 	}
-	sampler,err := New(params.BLISS_B_4,seed)
+	entropy,err := NewEntropy(seed)
+	if err != nil {
+		t.Errorf("Failed to create entropy: %s",err.Error())
+	}
+	sampler,err := New(params.BLISS_B_4,entropy)
 	if err != nil {
 		t.Errorf("Failed to create sampler: %s",err.Error())
 	}

@@ -36,7 +36,7 @@ func TestInvert(t *testing.T) {
 			}
 			poly.data[j] = int32(tmp)
 		}
-		poly.bound()
+		poly.Bound()
 		ntt,err := poly.NTT()
 		if err != nil {
 			t.Errorf("Error in FFT(): %s",err.Error())
@@ -44,7 +44,7 @@ func TestInvert(t *testing.T) {
 		for j := 0; j < int(poly.n); j++ {
 			tmp,err := strconv.Atoi(v2[j])
 			if err != nil {
-				t.Errorf("Invalid integer: ",v2[j])
+				t.Errorf("Invalid integer: %s",v2[j])
 			}
 			if tmp != int(ntt.data[j]) {
 				t.Errorf("Wrong result of FFT(): expect %d, got %d",tmp,ntt.data[j])

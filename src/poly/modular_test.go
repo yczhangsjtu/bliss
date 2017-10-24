@@ -241,7 +241,7 @@ func TestModularArrayBound(t *testing.T) {
   hdata := []int32{0, 6, 5,3, 3,5, 1,5, 3,3}
   f,_ := NewModularArray(10,7)
   f.SetData(fdata)
-  f.bound()
+  f.Bound()
   res := f.GetData()
   if len(hdata) != len(res) {
     t.Errorf("Error in computing f.flip(): incorrect length %d", len(res))

@@ -143,7 +143,7 @@ func TestNTT(t *testing.T) {
 			}
 			poly.data[j] = int32(tmp)
 		}
-		poly.bound()
+		poly.Bound()
 		ntt,err := poly.NTT()
 		if err != nil {
 			t.Errorf("Error in FFT(): %s",err.Error())

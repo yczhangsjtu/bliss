@@ -40,6 +40,10 @@ func New(version int) (*Polynomial, error) {
 	return NewPolynomial(param)
 }
 
+func (p *Polynomial) Param() *params.BlissBParam {
+	return p.param
+}
+
 func (p *Polynomial) FFT() (*ModularArray,error) {
 	return p.fft(p.param)
 }
@@ -57,6 +61,15 @@ func (p *Polynomial) NTT() (*NTT,error) {
 	}
 	ntt := NTT{g,p.param}
 	return &ntt,nil
+}
+
+func (p *Polynomial) MultiplyNTT(ntt *NTT) (*Polynomial,error) {
+	lh,err := p.NTT()
+	if err != nil {
+		return nil,err
+	}
+	lh.Mul(ntt.ModularArray)
+	return lh.Poly()
 }
 
 func UniformPoly(version int, entropy *sampler.Entropy) *Polynomial {
@@ -83,6 +96,20 @@ func UniformPoly(version int, entropy *sampler.Entropy) *Polynomial {
 		mask := -(1^((v[j]&1)|((v[j]&2)>>1)))
 		i += int(mask&1)
 		v[j] += (int32((x&1)<<2)-2)&mask
+	}
+	p.SetData(v)
+	return p
+}
+
+func GaussPoly(version int, s *sampler.Sampler) *Polynomial {
+	p,err := New(version)
+	if err != nil {
+		return nil
+	}
+	n := p.param.N
+	v := make([]int32,n)
+	for i := 0; i < int(n); i++ {
+		v[i] = s.SampleGauss()
 	}
 	p.SetData(v)
 	return p

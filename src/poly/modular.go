@@ -20,6 +20,10 @@ func NewModularArray(n,q uint32) (*ModularArray, error) {
   return array, nil
 }
 
+func (ma *ModularArray) Size() uint32 {
+	return ma.n
+}
+
 func (ma *ModularArray) SetData(data []int32) error {
   if ma.n != uint32(len(data)) {
     return errors.New("Mismatched data length!")
@@ -42,6 +46,11 @@ func (lh *ModularArray) Inc(rh *ModularArray) *ModularArray {
   for i := 0; i < int(n); i++ {
     lh.data[i] = addMod(lh.data[i],rh.data[i],q)
   }
+  return lh
+}
+
+func (lh *ModularArray) ScalarInc(rh int32) *ModularArray {
+	lh.data[0] = addMod(lh.data[0],rh,lh.q)
   return lh
 }
 
@@ -129,12 +138,16 @@ func (lh *ModularArray) Exp(e uint32) *ModularArray {
   return ret
 }
 
-func (lh *ModularArray) bound() *ModularArray {
+func (lh *ModularArray) Bound() *ModularArray {
   n,q := lh.n,lh.q
   for i := 0; i < int(n); i++ {
     lh.data[i] = bound(lh.data[i],q)
   }
   return lh
+}
+
+func (lh *ModularArray) BoundNum(a int32) int32 {
+	return bound(a,lh.q)
 }
 
 func (ma *ModularArray) fft(param *params.BlissBParam) (*ModularArray,error) {

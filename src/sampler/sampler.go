@@ -24,7 +24,7 @@ func invalidSampler() *Sampler {
 	return &Sampler{0,0,0,0,0,0,[]uint8{},[]uint8{},nil}
 }
 
-func NewSampler(sigma,ell,prec uint32, seed []uint8) (*Sampler, error) {
+func NewSampler(sigma,ell,prec uint32, entropy *Entropy) (*Sampler, error) {
 	columns := prec/8
 	ctable,err := getTable(sigma,ell,prec)
 	if err != nil {
@@ -38,19 +38,15 @@ func NewSampler(sigma,ell,prec uint32, seed []uint8) (*Sampler, error) {
 	if ksigmabits == 0 {
 		return invalidSampler(),fmt.Errorf("Failed to get kSigmaBits")
 	}
-	random, err := NewEntropy(seed)
-	if err != nil {
-		return invalidSampler(),err
-	}
-	return &Sampler{sigma,ell,prec,columns,ksigma,ksigmabits,ctable,[]uint8{},random},nil
+	return &Sampler{sigma,ell,prec,columns,ksigma,ksigmabits,ctable,[]uint8{},entropy},nil
 }
 
-func New(version int, seed []uint8) (*Sampler, error) {
+func New(version int, entropy *Entropy) (*Sampler, error) {
 	param := params.GetParam(version)
 	if param == nil {
 		return nil,fmt.Errorf("Failed to get parameter")
 	}
-	return NewSampler(param.Sigma,param.Ell,param.Prec,seed)
+	return NewSampler(param.Sigma,param.Ell,param.Prec,entropy)
 }
 
 // Sample Bernoulli distribution with probability p
