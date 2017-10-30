@@ -8,15 +8,13 @@ import (
 )
 
 type BlissPrivateKey struct {
-	s1    *poly.PolyArray
-	s2    *poly.PolyArray
-	a     *poly.PolyArray
-	param *params.BlissBParam
+	s1 *poly.PolyArray
+	s2 *poly.PolyArray
+	a  *poly.PolyArray
 }
 
 type BlissPublicKey struct {
-	a     *poly.PolyArray
-	param *params.BlissBParam
+	a *poly.PolyArray
 }
 
 func GeneratePrivateKey(version int, entropy *sampler.Entropy) (*BlissPrivateKey, error) {
@@ -47,22 +45,26 @@ func GeneratePrivateKey(version int, entropy *sampler.Entropy) (*BlissPrivateKey
 		if err != nil {
 			continue
 		}
-		t.Mul(u)
-		apoly, err := t.INTT()
+		t.MulModQ(u)
+		t, err = t.INTT()
 		if err != nil {
 			return nil, err
 		}
-		apoly.ScalarMulModQ(-1)
-		a, err := apoly.NTT()
+		t.ScalarMulModQ(-1)
+		a, err := t.NTT()
 		if err != nil {
 			return nil, err
 		}
-		key := BlissPrivateKey{s1, s2, a, s1.Param()}
+		key := BlissPrivateKey{s1, s2, a}
 		return &key, nil
 	}
 	return nil, fmt.Errorf("Failed to generate invertible polynomial")
 }
 
 func (privateKey *BlissPrivateKey) PublicKey() *BlissPublicKey {
-	return &BlissPublicKey{privateKey.a, privateKey.param}
+	return &BlissPublicKey{privateKey.a}
+}
+
+func (privateKey *BlissPrivateKey) Param() *params.BlissBParam {
+	return privateKey.s1.Param()
 }

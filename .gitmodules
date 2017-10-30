@@ -1,3 +1,6 @@
 [submodule "src/golang.org/x/crypto"]
 	path = src/golang.org/x/crypto
 	url = https://github.com/golang/crypto.git
+[submodule "test_tool/Bliss"]
+	path = test_tool/Bliss
+	url = https://github.com/SRI-CSL/Bliss.git
