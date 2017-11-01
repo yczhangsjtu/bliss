@@ -30,7 +30,7 @@ func computeC(kappa uint32, u *poly.PolyArray, hash []byte) []uint32 {
 			i := 0
 			for j := 0; j < int(sampler.SHA_512_DIGEST_LENGTH); j++ {
 				index := whash[j]
-				if !array[j] {
+				if !array[index] {
 					indices[i] = uint32(index)
 					array[index] = true
 					i++
