@@ -2,6 +2,7 @@ package poly
 
 import (
 	"errors"
+	"fmt"
 	"params"
 	"sampler"
 )
@@ -48,6 +49,10 @@ func (pa *PolyArray) Size() uint32 {
 
 func (pa *PolyArray) Param() *params.BlissBParam {
 	return pa.param
+}
+
+func (pa *PolyArray) String() string {
+	return fmt.Sprintf("%d", pa.data)
 }
 
 func (pa *PolyArray) SetData(data []int32) error {

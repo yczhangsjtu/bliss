@@ -13,6 +13,11 @@ type BlissSignature struct {
 	c  []uint32
 }
 
+func (sig *BlissSignature) String() string {
+	return fmt.Sprintf("{z1:%s,z2:%s,c:%d}",
+		sig.z1.String(), sig.z2.String(), sig.c)
+}
+
 func computeC(kappa uint32, u *poly.PolyArray, hash []byte) []uint32 {
 	indices := make([]uint32, kappa)
 	data := u.GetData()

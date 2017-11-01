@@ -69,6 +69,15 @@ func (privateKey *BlissPrivateKey) Param() *params.BlissBParam {
 	return privateKey.s1.Param()
 }
 
-func (privateKey *BlissPublicKey) Param() *params.BlissBParam {
-	return privateKey.a.Param()
+func (publicKey *BlissPublicKey) Param() *params.BlissBParam {
+	return publicKey.a.Param()
+}
+
+func (privateKey *BlissPrivateKey) String() string {
+	return fmt.Sprintf("{s1:%s,s2:%s,a:%s}",
+		privateKey.s1.String(), privateKey.s2.String(), privateKey.a.String())
+}
+
+func (publicKey *BlissPublicKey) String() string {
+	return fmt.Sprintf("{a:%s}", publicKey.a.String())
 }
