@@ -165,3 +165,14 @@ func TestPolyArrayTimes(t *testing.T) {
 		}
 	}
 }
+
+func TestPolyArrayNorm2(t *testing.T) {
+	fdata := []int32{0, -1, 2, -3, -4, 5, -6, 5, 4, -3}
+	norm := int32(141)
+	f, _ := newPolyArray(10, 7)
+	f.SetData(fdata)
+	res := f.Norm2()
+	if res != norm {
+		t.Errorf("Error in computing f.Norm2(): expect %d, got %d", norm, res)
+	}
+}

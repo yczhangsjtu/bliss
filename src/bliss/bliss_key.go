@@ -68,3 +68,7 @@ func (privateKey *BlissPrivateKey) PublicKey() *BlissPublicKey {
 func (privateKey *BlissPrivateKey) Param() *params.BlissBParam {
 	return privateKey.s1.Param()
 }
+
+func (privateKey *BlissPublicKey) Param() *params.BlissBParam {
+	return privateKey.a.Param()
+}

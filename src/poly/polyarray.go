@@ -42,26 +42,26 @@ func New(version int) (*PolyArray, error) {
 	return NewPolyArray(param)
 }
 
-func (ma *PolyArray) Size() uint32 {
-	return ma.n
+func (pa *PolyArray) Size() uint32 {
+	return pa.n
 }
 
-func (p *PolyArray) Param() *params.BlissBParam {
-	return p.param
+func (pa *PolyArray) Param() *params.BlissBParam {
+	return pa.param
 }
 
-func (ma *PolyArray) SetData(data []int32) error {
-	if ma.n != uint32(len(data)) {
+func (pa *PolyArray) SetData(data []int32) error {
+	if pa.n != uint32(len(data)) {
 		return errors.New("Mismatched data length!")
 	}
-	for i := 0; i < int(ma.n); i++ {
-		ma.data[i] = data[i]
+	for i := 0; i < int(pa.n); i++ {
+		pa.data[i] = data[i]
 	}
 	return nil
 }
 
-func (ma *PolyArray) GetData() []int32 {
-	return ma.data
+func (pa *PolyArray) GetData() []int32 {
+	return pa.data
 }
 
 func UniformPoly(version int, entropy *sampler.Entropy) *PolyArray {

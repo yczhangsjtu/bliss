@@ -136,3 +136,23 @@ func (lh *PolyArray) ModQ() *PolyArray {
 func (lh *PolyArray) NumModQ(a int32) int32 {
 	return bound(a, lh.q)
 }
+
+func (lh *PolyArray) NumMod2Q(a int32) int32 {
+	return bound(a, lh.q*2)
+}
+
+func (lh *PolyArray) Mod2Q() *PolyArray {
+	n, q := lh.n, lh.q
+	for i := 0; i < int(n); i++ {
+		lh.data[i] = bound(lh.data[i], 2*q)
+	}
+	return lh
+}
+
+func (lh *PolyArray) ModP() *PolyArray {
+	n := lh.n
+	for i := 0; i < int(n); i++ {
+		lh.data[i] = bound(lh.data[i], lh.param.Modp)
+	}
+	return lh
+}
