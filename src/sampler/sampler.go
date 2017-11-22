@@ -106,13 +106,13 @@ func (sampler *Sampler) sampleBer(p []uint8) bool {
 }
 
 // Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2))
-func (sampler *Sampler) SampleBerExp(x uint32) bool {
-	ri := sampler.ell - 1
+func (sampler *Sampler) sampleBerExp(x uint32, table []uint8, ell uint32) bool {
+	ri := ell - 1
 	mask := uint32(1) << ri
 	start := ri * sampler.columns
 	for mask > 0 {
 		if x&mask != 0 {
-			if !sampler.sampleBer(sampler.ctable[start : start+sampler.columns]) {
+			if !sampler.sampleBer(table[start : start+sampler.columns]) {
 				return false
 			}
 		}
@@ -122,14 +122,15 @@ func (sampler *Sampler) SampleBerExp(x uint32) bool {
 	return true
 }
 
-func (sampler *Sampler) SampleBerExpCt(x uint32) bool {
+// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2))
+func (sampler *Sampler) sampleBerExpCt(x uint32, table []uint8, ell uint32) bool {
 	var xi, i, ret, start, bit uint32
 	start = 0
 	ret = 1
 
 	xi = x
-	for i = sampler.ell - 1; i != 0; i-- {
-		if sampler.sampleBer(sampler.ctable[start : start+sampler.columns]) {
+	for i = ell - 1; i != 0; i-- {
+		if sampler.sampleBer(table[start : start+sampler.columns]) {
 			bit = 1
 		} else {
 			bit = 0
@@ -143,24 +144,36 @@ func (sampler *Sampler) SampleBerExpCt(x uint32) bool {
 }
 
 // Sample Bernoulli distribution with probability p = 1/cosh(-x/(2*sigma^2))
-func (sampler *Sampler) SampleBerCosh(x int32) bool {
+func (sampler *Sampler) sampleBerCosh(x int32, table []uint8, ell uint32) bool {
 	if x < 0 {
 		x = -x
 	}
 	x <<= 1
 	for {
-		bit := sampler.SampleBerExp(uint32(x))
+		bit := sampler.sampleBerExp(uint32(x), table, ell)
 		if bit {
 			return true
 		}
 		bit = sampler.random.Bit()
 		if !bit {
-			bit = sampler.SampleBerExp(uint32(x))
+			bit = sampler.sampleBerExp(uint32(x), table, ell)
 			if !bit {
 				return false
 			}
 		}
 	}
+}
+
+func (sampler *Sampler) SampleBerExp(x uint32) bool {
+	return sampler.sampleBerExp(x, sampler.ctable, sampler.ell)
+}
+
+func (sampler *Sampler) SampleBerExpCt(x uint32) bool {
+	return sampler.sampleBerExpCt(x, sampler.ctable, sampler.ell)
+}
+
+func (sampler *Sampler) SampleBerCosh(x int32) bool {
+	return sampler.sampleBerCosh(x, sampler.ctable, sampler.ell)
 }
 
 // Discrete Binary Gauss distribution is Discrete Gauss Distribution with
@@ -185,27 +198,27 @@ restart:
 
 // Sample according to Discrete Gauss Distribution
 // exp(-x^2/(2*sigma*sigma))
-func (sampler *Sampler) SampleGauss() int32 {
+func (sampler *Sampler) sampleGauss(ksigma uint16, ksigmabits uint16, table []uint8, ell uint32) int32 {
 	var x, y uint32
 	var u bool
 	for {
 		x = sampler.SampleBinaryGauss()
 		for {
-			y = sampler.random.Bits(int(sampler.kSigmaBits))
-			if y < uint32(sampler.kSigma) {
+			y = sampler.random.Bits(int(ksigmabits))
+			if y < uint32(ksigma) {
 				break
 			}
 		}
-		e := y * (y + 2*uint32(sampler.kSigma)*x)
+		e := y * (y + 2*uint32(ksigma)*x)
 		u = sampler.random.Bit()
 		if (x|y) != 0 || u {
-			if sampler.SampleBerExp(e) {
+			if sampler.sampleBerExp(e, table, ell) {
 				break
 			}
 		}
 	}
 
-	valPos := int32(uint32(sampler.kSigma)*x + y)
+	valPos := int32(uint32(ksigma)*x + y)
 	if u {
 		return valPos
 	} else {
@@ -213,32 +226,50 @@ func (sampler *Sampler) SampleGauss() int32 {
 	}
 }
 
+func (sampler *Sampler) SampleGauss() int32 {
+	return sampler.sampleGauss(sampler.kSigma, sampler.kSigmaBits, sampler.ctable, sampler.ell)
+}
+
 // Sample according to Discrete Gauss Distribution, constant time
 // exp(-x^2/(2*sigma*sigma))
-func (sampler *Sampler) SampleGaussCt() int32 {
+func (sampler *Sampler) sampleGaussCt(ksigma uint16, ksigmabits uint16, table []uint8, ell uint32) int32 {
 	var x, y uint32
 	var u bool
 	for {
 		x = sampler.SampleBinaryGauss()
 		for {
-			y = sampler.random.Bits(int(sampler.kSigmaBits))
-			if y < uint32(sampler.kSigma) {
+			y = sampler.random.Bits(int(ksigmabits))
+			if y < uint32(ksigma) {
 				break
 			}
 		}
-		e := y * (y + 2*uint32(sampler.kSigma)*x)
+		e := y * (y + 2*uint32(ksigma)*x)
 		u = sampler.random.Bit()
 		if (x|y) != 0 || u {
-			if sampler.SampleBerExpCt(e) {
+			if sampler.sampleBerExpCt(e, table, ell) {
 				break
 			}
 		}
 	}
 
-	valPos := int32(uint32(sampler.kSigma)*x + y)
+	valPos := int32(uint32(ksigma)*x + y)
 	if u {
 		return valPos
 	} else {
 		return -valPos
 	}
+}
+
+func (sampler *Sampler) SampleGaussCt() int32 {
+	return sampler.sampleGaussCt(sampler.kSigma, sampler.kSigmaBits, sampler.ctable, sampler.ell)
+}
+
+// Sample according to Discrete Gauss Distribution, by sigma1
+func (sampler *Sampler) SampleGaussCtAlpha() int32 {
+	return sampler.sampleGaussCt(sampler.kSigma1, sampler.kSigmaBits1, sampler.ctable1, sampler.ell1)
+}
+
+// Sample according to Discrete Gauss Distribution, by sigma2
+func (sampler *Sampler) SampleGaussCtBeta() int32 {
+	return sampler.sampleGaussCt(sampler.kSigma2, sampler.kSigmaBits2, sampler.ctable2, sampler.ell2)
 }
