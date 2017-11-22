@@ -980,3 +980,20 @@ func getKSigmaBits(sigma, prec uint32) uint16 {
 		return 0
 	}
 }
+
+func splitSigma(sigma uint32) (sigma1, sigma2, ell1, ell2 uint32) {
+	switch sigma {
+	case 100:
+		return 60, 80, 17, 18
+	case 215:
+		return 129, 172, 19, 20
+	case 107:
+		return 70, 81, 18, 18
+	case 250:
+		return 150, 200, 20, 21
+	case 271:
+		return 161, 218, 20, 21
+	default:
+		return 0, 0, 0, 0
+	}
+}

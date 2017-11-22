@@ -13,14 +13,24 @@ type Sampler struct {
 	kSigma     uint16
 	kSigmaBits uint16
 
-	ctable   []uint8
-	cdttable []uint8
+	ctable []uint8
+
+	/* For splitting */
+	ell1        uint32
+	ell2        uint32
+	kSigma1     uint16
+	kSigma2     uint16
+	kSigmaBits1 uint16
+	kSigmaBits2 uint16
+	ctable1     []uint8
+	ctable2     []uint8
 
 	random *Entropy
 }
 
 func invalidSampler() *Sampler {
-	return &Sampler{0, 0, 0, 0, 0, 0, []uint8{}, []uint8{}, nil}
+	return &Sampler{0, 0, 0, 0, 0, 0, []uint8{}, 0, 0, 0, 0, 0, 0,
+		[]uint8{}, []uint8{}, nil}
 }
 
 func NewSampler(sigma, ell, prec uint32, entropy *Entropy) (*Sampler, error) {
@@ -37,7 +47,37 @@ func NewSampler(sigma, ell, prec uint32, entropy *Entropy) (*Sampler, error) {
 	if ksigmabits == 0 {
 		return invalidSampler(), fmt.Errorf("Failed to get kSigmaBits")
 	}
-	return &Sampler{sigma, ell, prec, columns, ksigma, ksigmabits, ctable, []uint8{}, entropy}, nil
+	sigma1, sigma2, ell1, ell2 := splitSigma(sigma)
+	if sigma1 == 0 || sigma2 == 0 || ell1 == 0 || ell2 == 0 {
+		return invalidSampler(), fmt.Errorf("Failed to split sigma")
+	}
+	ctable1, err := getTable(sigma1, ell1, prec)
+	if err != nil {
+		return invalidSampler(), err
+	}
+	ksigma1 := getKSigma(sigma1, prec)
+	if ksigma1 == 0 {
+		return invalidSampler(), fmt.Errorf("Failed to get kSigma1")
+	}
+	ksigmabits1 := getKSigmaBits(sigma1, prec)
+	if ksigmabits1 == 0 {
+		return invalidSampler(), fmt.Errorf("Failed to get kSigmaBits1")
+	}
+	ctable2, err := getTable(sigma2, ell2, prec)
+	if err != nil {
+		return invalidSampler(), err
+	}
+	ksigma2 := getKSigma(sigma2, prec)
+	if ksigma2 == 0 {
+		return invalidSampler(), fmt.Errorf("Failed to get kSigma2")
+	}
+	ksigmabits2 := getKSigmaBits(sigma2, prec)
+	if ksigmabits2 == 0 {
+		return invalidSampler(), fmt.Errorf("Failed to get kSigmaBits2")
+	}
+	return &Sampler{sigma, ell, prec, columns, ksigma, ksigmabits, ctable,
+		ell1, ell2, ksigma1, ksigma2, ksigmabits1, ksigmabits2, ctable1, ctable2,
+		entropy}, nil
 }
 
 func New(version int, entropy *Entropy) (*Sampler, error) {
