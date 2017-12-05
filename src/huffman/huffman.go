@@ -9,8 +9,15 @@ type Pair struct {
 	Nbit uint8
 }
 
+type Triple struct {
+	Left  int
+	Right int
+	Index int
+}
+
 type HuffmanCode struct {
 	Code []Pair
+	Node []Triple
 }
 
 type HuffmanEncoder struct {
@@ -51,10 +58,28 @@ func (encoder *HuffmanEncoder) Update(index int) error {
 func (encoder *HuffmanEncoder) Digest() []byte {
 	size := encoder.packer.Size()
 	ret := []byte{byte(size / 256), byte(size % 256)}
-	ret = append(ret, encoder.packer.Data()...)
+	ret = append(ret, encoder.packer.Data()[:(size+7)/8]...)
 	return ret
 }
 
-func (decoder *HuffmanDecoder) Next() int {
-	return 0
+func (decoder *HuffmanDecoder) Next() (int, error) {
+	curr := 0
+	for decoder.unpacker.Left() > 0 {
+		bit, err := decoder.unpacker.ReadBits(1)
+		if err != nil {
+			return -1, fmt.Errorf("Error in reading bit: %s", err.Error())
+		}
+		if bit == 0 {
+			curr = decoder.code.Node[curr].Left
+		} else {
+			curr = decoder.code.Node[curr].Right
+		}
+		if curr < 0 {
+			return -1, fmt.Errorf("Unexpected bit %d", bit)
+		}
+		if decoder.code.Node[curr].Index >= 0 {
+			return decoder.code.Node[curr].Index, nil
+		}
+	}
+	return -1, fmt.Errorf("Unexpected end of bit string when decoding")
 }
