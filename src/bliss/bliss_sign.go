@@ -3,6 +3,7 @@ package bliss
 import (
 	"fmt"
 	"golang.org/x/crypto/sha3"
+	"huffman"
 	"params"
 	"poly"
 	"sampler"
@@ -330,6 +331,97 @@ func DecodeBlissSignature(data []byte) (*BlissSignature, error) {
 		cdata[i] = (uint32(csrc[i*2]) << 8) | (uint32(csrc[i*2+1]))
 	}
 	return ret, nil
+}
+
+func (sig *BlissSignature) Serialize() []byte {
+	packer := huffman.NewBitPacker()
+	n := sig.Param().N
+	nbit := sig.Param().Nbits
+	version := sig.Param().Version
+	nz1 := sig.Param().Nbz1
+	nz2 := sig.Param().Nbz2
+	kappa := sig.Param().Kappa
+	code := sig.Param().Code
+	z1data := sig.z1.GetData()
+	z2data := sig.z2.GetData()
+	ret := make([]byte, n+1)
+	ret[0] = byte(version)
+	for i := 0; i < int(n); i++ {
+		ret[i+1] = byte(z1data[i] & 0xff)
+	}
+	for i := 0; i < int(kappa); i++ {
+		packer.WriteBits(uint64(sig.c[i]), nbit)
+	}
+	ret = append(ret, packer.Data()...)
+	encoder := huffman.NewHuffmanEncoder(code)
+	for i := 0; i < int(n); i++ {
+		z1 := z1data[i] >> 8
+		z2 := z2data[i]
+		index := (int(z1)+int(nz1)/2)*(int(nz2)*2-1) + int(z2) + int(nz2) - 1
+		if index < 0 {
+			fmt.Printf("z1 = %d, z2 = %d, index = %d\n", z1, z2, index)
+		}
+		err := encoder.Update(index)
+		if err != nil {
+			return []byte{}
+		}
+	}
+	ret = append(ret, encoder.Digest()...)
+	return ret
+}
+
+func DeserializeBlissSignature(data []byte) (*BlissSignature, error) {
+	z1, err := poly.New(int(data[0]))
+	if err != nil {
+		return nil, fmt.Errorf("Error in generating new polyarray: %s", err.Error())
+	}
+	param := z1.Param()
+	z2, err := poly.NewPolyArray(param)
+	if err != nil {
+		return nil, fmt.Errorf("Error in generating new polyarray: %s", err.Error())
+	}
+	n := param.N
+	kappa := param.Kappa
+	nbit := param.Nbits
+	nz1 := param.Nbz1
+	nz2 := param.Nbz2
+	code := param.Code
+
+	z1data := z1.GetData()
+	z2data := z2.GetData()
+	cdata := make([]uint32, kappa)
+
+	csize := (nbit*kappa + 7) / 8
+	lowsrc := data[1 : 1+n]
+	csrc := data[1+n : 1+n+csize]
+	z1z2 := data[1+n+csize:]
+
+	decoder := huffman.NewHuffmanDecoder(code, z1z2)
+	for i := 0; i < int(n); i++ {
+		z1low := int32(lowsrc[i])
+		index, err := decoder.Next()
+		if err != nil {
+			return nil, fmt.Errorf("Error in decoding huffman: %s", err.Error())
+		}
+		if index < 0 {
+			return nil, fmt.Errorf("Invalid index %d", index)
+		}
+		z1high := index/(int(nz2)*2-1) - int(nz1)/2
+		z2 := int32(index%(int(nz2)*2-1) - int(nz2) + 1)
+		z1 := int32(z1high<<8) | z1low
+		z1data[i] = z1
+		z2data[i] = z2
+	}
+
+	unpacker := huffman.NewBitUnpacker(csrc, nbit*kappa)
+	for i := 0; i < int(kappa); i++ {
+		bits, err := unpacker.ReadBits(nbit)
+		if err != nil {
+			return nil, fmt.Errorf("Error in unpacking c: %s", err.Error())
+		}
+		cdata[i] = uint32(bits)
+	}
+	return &BlissSignature{z1, z2, cdata[:]}, nil
 }
 
 func Abs(x int32) int32 {

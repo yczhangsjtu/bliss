@@ -94,5 +94,5 @@ func (packer *BitPacker) Size() uint32 {
 }
 
 func (packer *BitPacker) Data() []byte {
-	return packer.data[:packer.Size()]
+	return packer.data[:(packer.Size()+7)/8]
 }
