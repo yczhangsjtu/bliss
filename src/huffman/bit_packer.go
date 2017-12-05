@@ -46,18 +46,53 @@ func (packer *BitPacker) WriteBits(code uint64, nbit uint32) error {
 		}
 		left := 8 - packer.nbit
 		if nbit < left {
-			packer.data[packer.nbyte] <<= nbit
-			packer.data[packer.nbyte] |= byte(code & uint64(uint32(1<<nbit)-1))
+			// packer.data[packer.nbyte] <<= nbit
+			packer.data[packer.nbyte] |= byte(code&uint64(uint32(1<<nbit)-1)) << (left - nbit)
 			packer.nbit += nbit
 			return nil
 		} else {
-			packer.data[packer.nbyte] <<= left
-			packer.data[packer.nbyte] |= byte(code & uint64(uint32(1<<left)-1))
+			// packer.data[packer.nbyte] <<= left
+			packer.data[packer.nbyte] |= byte((code >> (nbit - left)) & uint64(uint32(1<<left)-1))
 			packer.nbit = 0
 			packer.nbyte += 1
 			nbit -= left
-			code >>= left
+			code &= uint64((1 << nbit) - 1)
 		}
 	}
 	return nil
+}
+
+func (unpacker *BitUnpacker) Left() uint32 {
+	return unpacker.size - (unpacker.pbyte*8 + unpacker.pbit)
+}
+
+func (unpacker *BitUnpacker) ReadBits(nbit uint32) (uint64, error) {
+	if unpacker.Left() < nbit {
+		return 0, fmt.Errorf("Not enough bits left!")
+	}
+	ret := uint64(0)
+	for nbit > 0 {
+		left := 8 - unpacker.pbit
+		if nbit < left {
+			ret <<= nbit
+			ret |= uint64((unpacker.data[unpacker.pbyte] >> (left - nbit)) & byte((1<<nbit)-1))
+			unpacker.pbit += nbit
+			return ret, nil
+		} else {
+			ret <<= left
+			ret |= uint64(unpacker.data[unpacker.pbyte] & byte((1<<left)-1))
+			unpacker.pbyte += 1
+			unpacker.pbit = 0
+			nbit -= left
+		}
+	}
+	return ret, nil
+}
+
+func (packer *BitPacker) Size() uint32 {
+	return packer.nbyte*8 + packer.nbit
+}
+
+func (packer *BitPacker) Data() []byte {
+	return packer.data[:packer.Size()]
 }
