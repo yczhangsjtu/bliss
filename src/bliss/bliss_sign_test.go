@@ -1,7 +1,7 @@
 package bliss
 
 import (
-	_ "fmt"
+	"fmt"
 	_ "io/ioutil"
 	"reflect"
 	"sampler"
@@ -115,6 +115,7 @@ func TestSignatureSerializeDeserialize(t *testing.T) {
 		}
 
 		enc := sig.Serialize()
+		fmt.Printf("Size of signature for BLISS-%d: %d bytes (%d bits)\n", i, len(enc), len(enc)*8)
 		if len(enc) == 0 {
 			t.Errorf("Failed to encode signature for version %d", i)
 			continue

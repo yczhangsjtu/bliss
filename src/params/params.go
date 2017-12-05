@@ -822,151 +822,445 @@ func GetParam(version int) *BlissBParam {
 
 	huffman3 := &huffman.HuffmanCode{
 		[]huffman.Pair{
-			huffman.Pair{25, 5}, /*   0: (0,-1) 11001 */
-			huffman.Pair{0, 1},  /*   1: (0, 0) 0 */
-			huffman.Pair{24, 5}, /*   2: (0, 1) 11000 */
+			huffman.Pair{480170, 21}, /*   0: (0,-3) 001110101001110101010 */
+			huffman.Pair{119, 9},     /*   1: (0,-2) 001110111 */
+			huffman.Pair{3, 3},       /*   2: (0,-1) 011 */
+			huffman.Pair{1, 1},       /*   3: (0, 0) 1 */
+			huffman.Pair{2, 3},       /*   4: (0, 1) 010 */
+			huffman.Pair{118, 9},     /*   5: (0, 2) 001110110 */
+			huffman.Pair{240087, 20}, /*   6: (0, 3) 00111010100111010111 */
 
-			huffman.Pair{52, 6}, /*   3: (1,-1) 110100 */
-			huffman.Pair{2, 2},  /*   4: (1, 0) 10 */
-			huffman.Pair{27, 5}, /*   5: (1, 1) 11011 */
+			huffman.Pair{1920684, 23}, /*   7: (1,-3) 00111010100111010101100 */
+			huffman.Pair{936, 12},     /*   8: (1,-2) 001110101000 */
+			huffman.Pair{5, 5},        /*   9: (1,-1) 00101 */
+			huffman.Pair{0, 3},        /*  10: (1, 0) 000 */
+			huffman.Pair{4, 5},        /*  11: (1, 1) 00100 */
+			huffman.Pair{471, 11},     /*  12: (1, 2) 00111010111 */
+			huffman.Pair{960347, 22},  /*  13: (1, 3) 0011101010011101011011 */
 
-			huffman.Pair{428, 9}, /*   6: (2,-1) 110101100 */
-			huffman.Pair{7, 3},   /*   7: (2, 0) 111 */
-			huffman.Pair{215, 8}, /*   8: (2, 1) 11010111 */
+			huffman.Pair{7682740, 25}, /*  14: (2,-3) 0011101010011101010110100 */
+			huffman.Pair{3749, 14},    /*  15: (2,-2) 00111010100101 */
+			huffman.Pair{28, 7},       /*  16: (2,-1) 0011100 */
+			huffman.Pair{6, 5},        /*  17: (2, 0) 00110 */
+			huffman.Pair{15, 6},       /*  18: (2, 1) 001111 */
+			huffman.Pair{3748, 14},    /*  19: (2, 2) 00111010100100 */
+			huffman.Pair{3841371, 24}, /*  20: (2, 3) 001110101001110101011011 */
 
-			huffman.Pair{1716, 11}, /*   9: (3,-1) 11010110100 */
-			huffman.Pair{106, 7},   /*  10: (3, 0) 1101010 */
-			huffman.Pair{859, 10},  /*  11: (3, 1) 1101011011 */
+			huffman.Pair{61461930, 28}, /*  21: (3,-3) 0011101010011101010110101010 */
+			huffman.Pair{60020, 18},    /*  22: (3,-2) 001110101001110100 */
+			huffman.Pair{470, 11},      /*  23: (3,-1) 00111010110 */
+			huffman.Pair{116, 9},       /*  24: (3, 0) 001110100 */
+			huffman.Pair{469, 11},      /*  25: (3, 1) 00111010101 */
+			huffman.Pair{30011, 17},    /*  26: (3, 2) 00111010100111011 */
+			huffman.Pair{61461929, 28}, /*  27: (3, 3) 0011101010011101010110101001 */
 
-			huffman.Pair{13740, 14}, /*  12: (4,-1) 11010110101100 */
-			huffman.Pair{3434, 12},  /*  13: (4, 0) 110101101010 */
-			huffman.Pair{6871, 13},  /*  14: (4, 1) 1101011010111 */
+			huffman.Pair{983390900, 32}, /*  28: (4,-3) 00111010100111010101101010110100 */
+			huffman.Pair{960346, 22},    /*  29: (4,-2) 0011101010011101011010 */
+			huffman.Pair{15004, 16},     /*  30: (4,-1) 0011101010011100 */
+			huffman.Pair{3750, 14},      /*  31: (4, 0) 00111010100110 */
+			huffman.Pair{7503, 15},      /*  32: (4, 1) 001110101001111 */
+			huffman.Pair{960345, 22},    /*  33: (4, 2) 0011101010011101011001 */
+			huffman.Pair{491695451, 31}, /*  34: (4, 3) 0011101010011101010110101011011 */
 
-			huffman.Pair{109932, 17}, /*  15: (5,-1) 11010110101101100 */
-			huffman.Pair{27482, 15},  /*  16: (5, 0) 110101101011010 */
-			huffman.Pair{54967, 16},  /*  17: (5, 1) 1101011010110111 */
+			huffman.Pair{2849352532, 36}, /*  35: (5,-3) 0100 */
+			huffman.Pair{61461928, 28},   /*  36: (5,-2) 0011101010011101010110101000 */
+			huffman.Pair{960344, 22},     /*  37: (5,-1) 0011101010011101011000 */
+			huffman.Pair{240084, 20},     /*  38: (5, 0) 00111010100111010100 */
+			huffman.Pair{960343, 22},     /*  39: (5, 1) 0011101010011101010111 */
+			huffman.Pair{30730967, 27},   /*  40: (5, 2) 001110101001110101011010111 */
+			huffman.Pair{3572159915, 35}, /*  41: (5, 3) 011 */
 
-			huffman.Pair{439735, 19}, /*  18: (6,-1) 1101011010110110111 */
-			huffman.Pair{219866, 18}, /*  19: (6, 0) 110101101011011010 */
-			huffman.Pair{439734, 19}, /*  20: (6, 1) 1101011010110110110 */
+			huffman.Pair{1403737771, 37}, /*  42: (6,-3) 01011 */
+			huffman.Pair{3933563604, 34}, /*  43: (6,-2) 00 */
+			huffman.Pair{245847724, 30},  /*  44: (6,-1) 001110101001110101011010101100 */
+			huffman.Pair{30730966, 27},   /*  45: (6, 0) 001110101001110101011010110 */
+			huffman.Pair{122923863, 29},  /*  46: (6, 1) 00111010100111010101101010111 */
+			huffman.Pair{1966781803, 33}, /*  47: (6, 2) 1 */
+			huffman.Pair{1403737770, 37}, /*  48: (6, 3) 01010 */
 		},
 		[]huffman.Triple{
-			huffman.Triple{1, 2, -1},   /*   0: */
-			huffman.Triple{-1, -1, 1},  /*   1: (0, 0)  1 bit  */
+			huffman.Triple{1, 96, -1},  /*   0: */
+			huffman.Triple{2, 93, -1},  /*   1: */
 			huffman.Triple{3, 4, -1},   /*   2: */
-			huffman.Triple{-1, -1, 4},  /*   3: (1, 0)  2 bits */
-			huffman.Triple{5, 40, -1},  /*   4: */
-			huffman.Triple{6, 9, -1},   /*   5: */
-			huffman.Triple{7, 8, -1},   /*   6: */
-			huffman.Triple{-1, -1, 2},  /*   7: (0, 1)  5 bits */
-			huffman.Triple{-1, -1, 0},  /*   8: (0,-1)  5 bits */
-			huffman.Triple{10, 39, -1}, /*   9: */
-			huffman.Triple{11, 12, -1}, /*  10: */
-			huffman.Triple{-1, -1, 3},  /*  11: (1,-1)  6 bits */
-			huffman.Triple{13, 14, -1}, /*  12: */
-			huffman.Triple{-1, -1, 10}, /*  13: (3, 0)  7 bits */
-			huffman.Triple{15, 38, -1}, /*  14: */
-			huffman.Triple{16, 17, -1}, /*  15: */
-			huffman.Triple{-1, -1, 6},  /*  16: (2,-1)  9 bits */
-			huffman.Triple{18, 37, -1}, /*  17: */
+			huffman.Triple{-1, -1, 10}, /*   3: (1, 0)  3 bits */
+			huffman.Triple{5, 8, -1},   /*   4: */
+			huffman.Triple{6, 7, -1},   /*   5: */
+			huffman.Triple{-1, -1, 11}, /*   6: (1, 1)  5 bits */
+			huffman.Triple{-1, -1, 9},  /*   7: (1,-1)  5 bits */
+			huffman.Triple{9, 10, -1},  /*   8: */
+			huffman.Triple{-1, -1, 17}, /*   9: (2, 0)  5 bits */
+			huffman.Triple{11, 92, -1}, /*  10: */
+			huffman.Triple{12, 13, -1}, /*  11: */
+			huffman.Triple{-1, -1, 16}, /*  12: (2,-1)  7 bits */
+			huffman.Triple{14, 89, -1}, /*  13: */
+			huffman.Triple{15, 16, -1}, /*  14: */
+			huffman.Triple{-1, -1, 24}, /*  15: (3, 0)  9 bits */
+			huffman.Triple{17, 86, -1}, /*  16: */
+			huffman.Triple{18, 85, -1}, /*  17: */
 			huffman.Triple{19, 20, -1}, /*  18: */
-			huffman.Triple{-1, -1, 9},  /*  19: (3,-1) 11 bits */
-			huffman.Triple{21, 22, -1}, /*  20: */
-			huffman.Triple{-1, -1, 13}, /*  21: (4, 0) 12 bits */
-			huffman.Triple{23, 36, -1}, /*  22: */
-			huffman.Triple{24, 25, -1}, /*  23: */
-			huffman.Triple{-1, -1, 12}, /*  24: (4,-1) 14 bits */
-			huffman.Triple{26, 27, -1}, /*  25: */
-			huffman.Triple{-1, -1, 16}, /*  26: (5, 0) 15 bits */
-			huffman.Triple{28, 35, -1}, /*  27: */
-			huffman.Triple{29, 30, -1}, /*  28: */
-			huffman.Triple{-1, -1, 15}, /*  29: (5,-1) 17 bits */
+			huffman.Triple{-1, -1, 8},  /*  19: (1,-2) 12 bits */
+			huffman.Triple{21, 24, -1}, /*  20: */
+			huffman.Triple{22, 23, -1}, /*  21: */
+			huffman.Triple{-1, -1, 19}, /*  22: (2, 2) 14 bits */
+			huffman.Triple{-1, -1, 15}, /*  23: (2,-2) 14 bits */
+			huffman.Triple{25, 26, -1}, /*  24: */
+			huffman.Triple{-1, -1, 31}, /*  25: (4, 0) 14 bits */
+			huffman.Triple{27, 84, -1}, /*  26: */
+			huffman.Triple{28, 29, -1}, /*  27: */
+			huffman.Triple{-1, -1, 30}, /*  28: (4,-1) 16 bits */
+			huffman.Triple{30, 83, -1}, /*  29: */
 			huffman.Triple{31, 32, -1}, /*  30: */
-			huffman.Triple{-1, -1, 19}, /*  31: (6, 0) 18 bits */
-			huffman.Triple{33, 34, -1}, /*  32: */
-			huffman.Triple{-1, -1, 20}, /*  33: (6, 1) 19 bits */
-			huffman.Triple{-1, -1, 18}, /*  34: (6,-1) 19 bits */
-			huffman.Triple{-1, -1, 17}, /*  35: (5, 1) 16 bits */
-			huffman.Triple{-1, -1, 14}, /*  36: (4, 1) 13 bits */
-			huffman.Triple{-1, -1, 11}, /*  37: (3, 1) 10 bits */
-			huffman.Triple{-1, -1, 8},  /*  38: (2, 1)  8 bits */
-			huffman.Triple{-1, -1, 5},  /*  39: (1, 1)  5 bits */
-			huffman.Triple{-1, -1, 7},  /*  40: (2, 0)  3 bits */
+			huffman.Triple{-1, -1, 22}, /*  31: (3,-2) 18 bits */
+			huffman.Triple{33, 74, -1}, /*  32: */
+			huffman.Triple{34, 35, -1}, /*  33: */
+			huffman.Triple{-1, -1, 38}, /*  34: (5, 0) 20 bits */
+			huffman.Triple{36, 37, -1}, /*  35: */
+			huffman.Triple{-1, -1, 0},  /*  36: (0,-3) 21 bits */
+			huffman.Triple{38, 73, -1}, /*  37: */
+			huffman.Triple{39, 40, -1}, /*  38: */
+			huffman.Triple{-1, -1, 7},  /*  39: (1,-3) 23 bits */
+			huffman.Triple{41, 72, -1}, /*  40: */
+			huffman.Triple{42, 43, -1}, /*  41: */
+			huffman.Triple{-1, -1, 14}, /*  42: (2,-3) 25 bits */
+			huffman.Triple{44, 69, -1}, /*  43: */
+			huffman.Triple{45, 48, -1}, /*  44: */
+			huffman.Triple{46, 47, -1}, /*  45: */
+			huffman.Triple{-1, -1, 36}, /*  46: (5,-2) 28 bits */
+			huffman.Triple{-1, -1, 27}, /*  47: (3, 3) 28 bits */
+			huffman.Triple{49, 50, -1}, /*  48: */
+			huffman.Triple{-1, -1, 21}, /*  49: (3,-3) 28 bits */
+			huffman.Triple{51, 68, -1}, /*  50: */
+			huffman.Triple{52, 53, -1}, /*  51: */
+			huffman.Triple{-1, -1, 44}, /*  52: (6,-1) 30 bits */
+			huffman.Triple{54, 67, -1}, /*  53: */
+			huffman.Triple{55, 56, -1}, /*  54: */
+			huffman.Triple{-1, -1, 28}, /*  55: (4,-3) 32 bits */
+			huffman.Triple{57, 66, -1}, /*  56: */
+			huffman.Triple{58, 59, -1}, /*  57: */
+			huffman.Triple{-1, -1, 43}, /*  58: (6,-2) 34 bits */
+			huffman.Triple{60, 65, -1}, /*  59: */
+			huffman.Triple{61, 62, -1}, /*  60: */
+			huffman.Triple{-1, -1, 35}, /*  61: (5,-3) 36 bits */
+			huffman.Triple{63, 64, -1}, /*  62: */
+			huffman.Triple{-1, -1, 48}, /*  63: (6, 3) 37 bits */
+			huffman.Triple{-1, -1, 42}, /*  64: (6,-3) 37 bits */
+			huffman.Triple{-1, -1, 41}, /*  65: (5, 3) 35 bits */
+			huffman.Triple{-1, -1, 47}, /*  66: (6, 2) 33 bits */
+			huffman.Triple{-1, -1, 34}, /*  67: (4, 3) 31 bits */
+			huffman.Triple{-1, -1, 46}, /*  68: (6, 1) 29 bits */
+			huffman.Triple{70, 71, -1}, /*  69: */
+			huffman.Triple{-1, -1, 45}, /*  70: (6, 0) 27 bits */
+			huffman.Triple{-1, -1, 40}, /*  71: (5, 2) 27 bits */
+			huffman.Triple{-1, -1, 20}, /*  72: (2, 3) 24 bits */
+			huffman.Triple{-1, -1, 39}, /*  73: (5, 1) 22 bits */
+			huffman.Triple{75, 82, -1}, /*  74: */
+			huffman.Triple{76, 79, -1}, /*  75: */
+			huffman.Triple{77, 78, -1}, /*  76: */
+			huffman.Triple{-1, -1, 37}, /*  77: (5,-1) 22 bits */
+			huffman.Triple{-1, -1, 33}, /*  78: (4, 2) 22 bits */
+			huffman.Triple{80, 81, -1}, /*  79: */
+			huffman.Triple{-1, -1, 29}, /*  80: (4,-2) 22 bits */
+			huffman.Triple{-1, -1, 13}, /*  81: (1, 3) 22 bits */
+			huffman.Triple{-1, -1, 6},  /*  82: (0, 3) 20 bits */
+			huffman.Triple{-1, -1, 26}, /*  83: (3, 2) 17 bits */
+			huffman.Triple{-1, -1, 32}, /*  84: (4, 1) 15 bits */
+			huffman.Triple{-1, -1, 25}, /*  85: (3, 1) 11 bits */
+			huffman.Triple{87, 88, -1}, /*  86: */
+			huffman.Triple{-1, -1, 23}, /*  87: (3,-1) 11 bits */
+			huffman.Triple{-1, -1, 12}, /*  88: (1, 2) 11 bits */
+			huffman.Triple{90, 91, -1}, /*  89: */
+			huffman.Triple{-1, -1, 5},  /*  90: (0, 2)  9 bits */
+			huffman.Triple{-1, -1, 1},  /*  91: (0,-2)  9 bits */
+			huffman.Triple{-1, -1, 18}, /*  92: (2, 1)  6 bits */
+			huffman.Triple{94, 95, -1}, /*  93: */
+			huffman.Triple{-1, -1, 4},  /*  94: (0, 1)  3 bits */
+			huffman.Triple{-1, -1, 2},  /*  95: (0,-1)  3 bits */
+			huffman.Triple{-1, -1, 3},  /*  96: (0, 0)  1 bit  */
 		},
 	}
 
 	huffman4 := &huffman.HuffmanCode{
 		[]huffman.Pair{
-			huffman.Pair{25, 5}, /*   0: (0,-1) 11001 */
-			huffman.Pair{0, 1},  /*   1: (0, 0) 0 */
-			huffman.Pair{24, 5}, /*   2: (0, 1) 11000 */
+			huffman.Pair{16073140, 24}, /*   0: (0,-6) 111101010100000110110100 */
+			huffman.Pair{125570, 17},   /*   1: (0,-5) 11110101010000010 */
+			huffman.Pair{1966, 11},     /*   2: (0,-4) 11110101110 */
+			huffman.Pair{72, 8},        /*   3: (0,-3) 01001000 */
+			huffman.Pair{14, 4},        /*   4: (0,-2) 1110 */
+			huffman.Pair{1, 3},         /*   5: (0,-1) 001 */
+			huffman.Pair{2, 2},         /*   6: (0, 0) 10 */
+			huffman.Pair{0, 3},         /*   7: (0, 1) 000 */
+			huffman.Pair{7, 4},         /*   8: (0, 2) 0111 */
+			huffman.Pair{123, 7},       /*   9: (0, 3) 1111011 */
+			huffman.Pair{1965, 11},     /*  10: (0, 4) 11110101101 */
+			huffman.Pair{125569, 17},   /*  11: (0, 5) 11110101010000001 */
+			huffman.Pair{16073139, 24}, /*  12: (0, 6) 111101010100000110110011 */
 
-			huffman.Pair{52, 6}, /*   3: (1,-1) 110100 */
-			huffman.Pair{2, 2},  /*   4: (1, 0) 10 */
-			huffman.Pair{27, 5}, /*   5: (1, 1) 11011 */
+			huffman.Pair{32146283, 25}, /*  13: (1,-6) 1111010101000001101101011 */
+			huffman.Pair{502272, 19},   /*  14: (1,-5) 1111010101000000000 */
+			huffman.Pair{3934, 12},     /*  15: (1,-4) 111101011110 */
+			huffman.Pair{147, 9},       /*  16: (1,-3) 010010011 */
+			huffman.Pair{16, 6},        /*  17: (1,-2) 010000 */
+			huffman.Pair{6, 4},         /*  18: (1,-1) 0110 */
+			huffman.Pair{6, 3},         /*  19: (1, 0) 110 */
+			huffman.Pair{5, 4},         /*  20: (1, 1) 0101 */
+			huffman.Pair{31, 5},        /*  21: (1, 2) 11111 */
+			huffman.Pair{146, 9},       /*  22: (1, 3) 010010010 */
+			huffman.Pair{3925, 12},     /*  23: (1, 4) 111101010101 */
+			huffman.Pair{251143, 18},   /*  24: (1, 5) 111101010100000111 */
+			huffman.Pair{32146282, 25}, /*  25: (1, 6) 1111010101000001101101010 */
 
-			huffman.Pair{428, 9}, /*   6: (2,-1) 110101100 */
-			huffman.Pair{7, 3},   /*   7: (2, 0) 111 */
-			huffman.Pair{215, 8}, /*   8: (2, 1) 11010111 */
+			huffman.Pair{257170216, 28}, /*  26: (2,-6) 1111010101000001101100101000 */
+			huffman.Pair{2009097, 21},   /*  27: (2,-5) 111101010100000001001 */
+			huffman.Pair{31394, 15},     /*  28: (2,-4) 111101010100010 */
+			huffman.Pair{1961, 11},      /*  29: (2,-3) 11110101001 */
+			huffman.Pair{75, 8},         /*  30: (2,-2) 01001011 */
+			huffman.Pair{60, 6},         /*  31: (2,-1) 111100 */
+			huffman.Pair{17, 6},         /*  32: (2, 0) 010001 */
+			huffman.Pair{19, 6},         /*  33: (2, 1) 010011 */
+			huffman.Pair{74, 8},         /*  34: (2, 2) 01001010 */
+			huffman.Pair{1960, 11},      /*  35: (2, 3) 11110101000 */
+			huffman.Pair{31393, 15},     /*  36: (2, 4) 111101010100001 */
+			huffman.Pair{2009096, 21},   /*  37: (2, 5) 111101010100000001000 */
+			huffman.Pair{128585111, 27}, /*  38: (2, 6) 111101010100000110110010111 */
 
-			huffman.Pair{3432, 12}, /*   9: (3,-1) 110101101000 */
-			huffman.Pair{106, 7},   /*  10: (3, 0) 1101010 */
-			huffman.Pair{1717, 11}, /*  11: (3, 1) 11010110101 */
+			huffman.Pair{2057361764, 31}, /*  39: (3,-6) 1111010101000001101100101100100 */
+			huffman.Pair{16073143, 24},   /*  40: (3,-5) 111101010100000110110111 */
+			huffman.Pair{502284, 19},     /*  41: (3,-4) 1111010101000001100 */
+			huffman.Pair{15699, 14},      /*  42: (3,-3) 11110101010011 */
+			huffman.Pair{1964, 11},       /*  43: (3,-2) 11110101100 */
+			huffman.Pair{977, 10},        /*  44: (3,-1) 1111010001 */
+			huffman.Pair{489, 9},         /*  45: (3, 0) 111101001 */
+			huffman.Pair{976, 10},        /*  46: (3, 1) 1111010000 */
+			huffman.Pair{1963, 11},       /*  47: (3, 2) 11110101011 */
+			huffman.Pair{15698, 14},      /*  48: (3, 3) 11110101010010 */
+			huffman.Pair{502275, 19},     /*  49: (3, 4) 1111010101000000011 */
+			huffman.Pair{16073142, 24},   /*  50: (3, 5) 111101010100000110110110 */
+			huffman.Pair{1028680883, 30}, /*  51: (3, 6) 111101010100000110110010110011 */
 
-			huffman.Pair{13732, 14}, /*  12: (4,-1) 11010110100100 */
-			huffman.Pair{859, 10},   /*  13: (4, 0) 1101011011 */
-			huffman.Pair{6867, 13},  /*  14: (4, 1) 1101011010011 */
+			huffman.Pair{1411067048, 36}, /*  52: (4,-6) 1000 */
+			huffman.Pair{514340439, 29},  /*  53: (4,-5) 11110101010000011011001010111 */
+			huffman.Pair{16073137, 24},   /*  54: (4,-4) 111101010100000110110001 */
+			huffman.Pair{1004547, 20},    /*  55: (4,-3) 11110101010000000011 */
+			huffman.Pair{62791, 16},      /*  56: (4,-2) 1111010101000111 */
+			huffman.Pair{15741, 14},      /*  57: (4,-1) 11110101111101 */
+			huffman.Pair{7871, 13},       /*  58: (4, 0) 1111010111111 */
+			huffman.Pair{15740, 14},      /*  59: (4, 1) 11110101111100 */
+			huffman.Pair{62790, 16},      /*  60: (4, 2) 1111010101000110 */
+			huffman.Pair{1004546, 20},    /*  61: (4, 3) 11110101010000000010 */
+			huffman.Pair{16073136, 24},   /*  62: (4, 4) 111101010100000110110000 */
+			huffman.Pair{514340438, 29},  /*  63: (4, 5) 11110101010000011011001010110 */
+			huffman.Pair{2853017175, 35}, /*  64: (4, 6) 111 */
 
-			huffman.Pair{109868, 17}, /*  15: (5,-1) 11010110100101100 */
-			huffman.Pair{27466, 15},  /*  16: (5, 0) 110101101001010 */
-			huffman.Pair{54935, 16},  /*  17: (5, 1) 1101011010010111 */
+			huffman.Pair{1102236309, 40}, /*  65: (5,-6) 10010101 */
+			huffman.Pair{2853017174, 35}, /*  66: (5,-5) 110 */
+			huffman.Pair{1028680871, 30}, /*  67: (5,-4) 111101010100000110110010100111 */
+			huffman.Pair{64292553, 26},   /*  68: (5,-3) 11110101010000011011001001 */
+			huffman.Pair{4018287, 22},    /*  69: (5,-2) 1111010101000001101111 */
+			huffman.Pair{2009099, 21},    /*  70: (5,-1) 111101010100000001011 */
+			huffman.Pair{1004570, 20},    /*  71: (5, 0) 11110101010000011010 */
+			huffman.Pair{2009098, 21},    /*  72: (5, 1) 111101010100000001010 */
+			huffman.Pair{4018286, 22},    /*  73: (5, 2) 1111010101000001101110 */
+			huffman.Pair{64292552, 26},   /*  74: (5, 3) 11110101010000011011001000 */
+			huffman.Pair{1028680870, 30}, /*  75: (5, 4) 111101010100000110110010100110 */
+			huffman.Pair{2853017173, 35}, /*  76: (5, 5) 101 */
+			huffman.Pair{1102236308, 40}, /*  77: (5, 6) 10010100 */
 
-			huffman.Pair{439479, 19}, /*  18: (6,-1) 1101011010010110111 */
-			huffman.Pair{219738, 18}, /*  19: (6, 0) 110101101001011010 */
-			huffman.Pair{439478, 19}, /*  20: (6, 1) 1101011010010110110 */
+			huffman.Pair{113977947, 42},  /*  78: (6,-6) 1001011011 */
+			huffman.Pair{2204472620, 41}, /*  79: (6,-5) 100101100 */
+			huffman.Pair{1349300900, 38}, /*  80: (6,-4) 100100 */
+			huffman.Pair{3934479764, 33}, /*  81: (6,-3) 0 */
+			huffman.Pair{1028680881, 30}, /*  82: (6,-2) 111101010100000110110010110001 */
+			huffman.Pair{514340434, 29},  /*  83: (6,-1) 11110101010000011011001010010 */
+			huffman.Pair{257170218, 28},  /*  84: (6, 0) 1111010101000001101100101010 */
+			huffman.Pair{257170221, 28},  /*  85: (6, 1) 1111010101000001101100101101 */
+			huffman.Pair{1028680880, 30}, /*  86: (6, 2) 111101010100000110110010110000 */
+			huffman.Pair{4114723531, 32}, /*  87: (6, 3) 11110101010000011011001011001011 */
+			huffman.Pair{2822134099, 37}, /*  88: (6, 4) 10011 */
+			huffman.Pair{1102236311, 40}, /*  89: (6, 5) 10010111 */
+			huffman.Pair{113977946, 42},  /*  90: (6, 6) 1001011010 */
 		},
 		[]huffman.Triple{
-			huffman.Triple{1, 2, -1},   /*   0: */
-			huffman.Triple{-1, -1, 1},  /*   1: (0, 0)  1 bit  */
-			huffman.Triple{3, 4, -1},   /*   2: */
-			huffman.Triple{-1, -1, 4},  /*   3: (1, 0)  2 bits */
-			huffman.Triple{5, 40, -1},  /*   4: */
-			huffman.Triple{6, 9, -1},   /*   5: */
-			huffman.Triple{7, 8, -1},   /*   6: */
-			huffman.Triple{-1, -1, 2},  /*   7: (0, 1)  5 bits */
-			huffman.Triple{-1, -1, 0},  /*   8: (0,-1)  5 bits */
-			huffman.Triple{10, 39, -1}, /*   9: */
-			huffman.Triple{11, 12, -1}, /*  10: */
-			huffman.Triple{-1, -1, 3},  /*  11: (1,-1)  6 bits */
-			huffman.Triple{13, 14, -1}, /*  12: */
-			huffman.Triple{-1, -1, 10}, /*  13: (3, 0)  7 bits */
-			huffman.Triple{15, 38, -1}, /*  14: */
-			huffman.Triple{16, 17, -1}, /*  15: */
-			huffman.Triple{-1, -1, 6},  /*  16: (2,-1)  9 bits */
-			huffman.Triple{18, 37, -1}, /*  17: */
-			huffman.Triple{19, 36, -1}, /*  18: */
-			huffman.Triple{20, 21, -1}, /*  19: */
-			huffman.Triple{-1, -1, 9},  /*  20: (3,-1) 12 bits */
-			huffman.Triple{22, 35, -1}, /*  21: */
-			huffman.Triple{23, 24, -1}, /*  22: */
-			huffman.Triple{-1, -1, 12}, /*  23: (4,-1) 14 bits */
-			huffman.Triple{25, 26, -1}, /*  24: */
-			huffman.Triple{-1, -1, 16}, /*  25: (5, 0) 15 bits */
-			huffman.Triple{27, 34, -1}, /*  26: */
-			huffman.Triple{28, 29, -1}, /*  27: */
-			huffman.Triple{-1, -1, 15}, /*  28: (5,-1) 17 bits */
-			huffman.Triple{30, 31, -1}, /*  29: */
-			huffman.Triple{-1, -1, 19}, /*  30: (6, 0) 18 bits */
-			huffman.Triple{32, 33, -1}, /*  31: */
-			huffman.Triple{-1, -1, 20}, /*  32: (6, 1) 19 bits */
-			huffman.Triple{-1, -1, 18}, /*  33: (6,-1) 19 bits */
-			huffman.Triple{-1, -1, 17}, /*  34: (5, 1) 16 bits */
-			huffman.Triple{-1, -1, 14}, /*  35: (4, 1) 13 bits */
-			huffman.Triple{-1, -1, 11}, /*  36: (3, 1) 11 bits */
-			huffman.Triple{-1, -1, 13}, /*  37: (4, 0) 10 bits */
-			huffman.Triple{-1, -1, 8},  /*  38: (2, 1)  8 bits */
-			huffman.Triple{-1, -1, 5},  /*  39: (1, 1)  5 bits */
-			huffman.Triple{-1, -1, 7},  /*  40: (2, 0)  3 bits */
+			huffman.Triple{1, 26, -1},    /*   0: */
+			huffman.Triple{2, 5, -1},     /*   1: */
+			huffman.Triple{3, 4, -1},     /*   2: */
+			huffman.Triple{-1, -1, 7},    /*   3: (0, 1)  3 bits */
+			huffman.Triple{-1, -1, 5},    /*   4: (0,-1)  3 bits */
+			huffman.Triple{6, 23, -1},    /*   5: */
+			huffman.Triple{7, 22, -1},    /*   6: */
+			huffman.Triple{8, 11, -1},    /*   7: */
+			huffman.Triple{9, 10, -1},    /*   8: */
+			huffman.Triple{-1, -1, 17},   /*   9: (1,-2)  6 bits */
+			huffman.Triple{-1, -1, 32},   /*  10: (2, 0)  6 bits */
+			huffman.Triple{12, 21, -1},   /*  11: */
+			huffman.Triple{13, 18, -1},   /*  12: */
+			huffman.Triple{14, 15, -1},   /*  13: */
+			huffman.Triple{-1, -1, 3},    /*  14: (0,-3)  8 bits */
+			huffman.Triple{16, 17, -1},   /*  15: */
+			huffman.Triple{-1, -1, 22},   /*  16: (1, 3)  9 bits */
+			huffman.Triple{-1, -1, 16},   /*  17: (1,-3)  9 bits */
+			huffman.Triple{19, 20, -1},   /*  18: */
+			huffman.Triple{-1, -1, 34},   /*  19: (2, 2)  8 bits */
+			huffman.Triple{-1, -1, 30},   /*  20: (2,-2)  8 bits */
+			huffman.Triple{-1, -1, 33},   /*  21: (2, 1)  6 bits */
+			huffman.Triple{-1, -1, 20},   /*  22: (1, 1)  4 bits */
+			huffman.Triple{24, 25, -1},   /*  23: */
+			huffman.Triple{-1, -1, 18},   /*  24: (1,-1)  4 bits */
+			huffman.Triple{-1, -1, 8},    /*  25: (0, 2)  4 bits */
+			huffman.Triple{27, 28, -1},   /*  26: */
+			huffman.Triple{-1, -1, 6},    /*  27: (0, 0)  2 bits */
+			huffman.Triple{29, 30, -1},   /*  28: */
+			huffman.Triple{-1, -1, 19},   /*  29: (1, 0)  3 bits */
+			huffman.Triple{31, 32, -1},   /*  30: */
+			huffman.Triple{-1, -1, 4},    /*  31: (0,-2)  4 bits */
+			huffman.Triple{33, 180, -1},  /*  32: */
+			huffman.Triple{34, 35, -1},   /*  33: */
+			huffman.Triple{-1, -1, 31},   /*  34: (2,-1)  6 bits */
+			huffman.Triple{36, 179, -1},  /*  35: */
+			huffman.Triple{37, 42, -1},   /*  36: */
+			huffman.Triple{38, 41, -1},   /*  37: */
+			huffman.Triple{39, 40, -1},   /*  38: */
+			huffman.Triple{-1, -1, 46},   /*  39: (3, 1) 10 bits */
+			huffman.Triple{-1, -1, 44},   /*  40: (3,-1) 10 bits */
+			huffman.Triple{-1, -1, 45},   /*  41: (3, 0)  9 bits */
+			huffman.Triple{43, 166, -1},  /*  42: */
+			huffman.Triple{44, 47, -1},   /*  43: */
+			huffman.Triple{45, 46, -1},   /*  44: */
+			huffman.Triple{-1, -1, 35},   /*  45: (2, 3) 11 bits */
+			huffman.Triple{-1, -1, 29},   /*  46: (2,-3) 11 bits */
+			huffman.Triple{48, 165, -1},  /*  47: */
+			huffman.Triple{49, 164, -1},  /*  48: */
+			huffman.Triple{50, 161, -1},  /*  49: */
+			huffman.Triple{51, 156, -1},  /*  50: */
+			huffman.Triple{52, 155, -1},  /*  51: */
+			huffman.Triple{53, 70, -1},   /*  52: */
+			huffman.Triple{54, 69, -1},   /*  53: */
+			huffman.Triple{55, 60, -1},   /*  54: */
+			huffman.Triple{56, 57, -1},   /*  55: */
+			huffman.Triple{-1, -1, 14},   /*  56: (1,-5) 19 bits */
+			huffman.Triple{58, 59, -1},   /*  57: */
+			huffman.Triple{-1, -1, 61},   /*  58: (4, 3) 20 bits */
+			huffman.Triple{-1, -1, 55},   /*  59: (4,-3) 20 bits */
+			huffman.Triple{61, 68, -1},   /*  60: */
+			huffman.Triple{62, 65, -1},   /*  61: */
+			huffman.Triple{63, 64, -1},   /*  62: */
+			huffman.Triple{-1, -1, 37},   /*  63: (2, 5) 21 bits */
+			huffman.Triple{-1, -1, 27},   /*  64: (2,-5) 21 bits */
+			huffman.Triple{66, 67, -1},   /*  65: */
+			huffman.Triple{-1, -1, 72},   /*  66: (5, 1) 21 bits */
+			huffman.Triple{-1, -1, 70},   /*  67: (5,-1) 21 bits */
+			huffman.Triple{-1, -1, 49},   /*  68: (3, 4) 19 bits */
+			huffman.Triple{-1, -1, 11},   /*  69: (0, 5) 17 bits */
+			huffman.Triple{71, 72, -1},   /*  70: */
+			huffman.Triple{-1, -1, 1},    /*  71: (0,-5) 17 bits */
+			huffman.Triple{73, 154, -1},  /*  72: */
+			huffman.Triple{74, 75, -1},   /*  73: */
+			huffman.Triple{-1, -1, 41},   /*  74: (3,-4) 19 bits */
+			huffman.Triple{76, 77, -1},   /*  75: */
+			huffman.Triple{-1, -1, 71},   /*  76: (5, 0) 20 bits */
+			huffman.Triple{78, 151, -1},  /*  77: */
+			huffman.Triple{79, 142, -1},  /*  78: */
+			huffman.Triple{80, 83, -1},   /*  79: */
+			huffman.Triple{81, 82, -1},   /*  80: */
+			huffman.Triple{-1, -1, 62},   /*  81: (4, 4) 24 bits */
+			huffman.Triple{-1, -1, 54},   /*  82: (4,-4) 24 bits */
+			huffman.Triple{84, 141, -1},  /*  83: */
+			huffman.Triple{85, 88, -1},   /*  84: */
+			huffman.Triple{86, 87, -1},   /*  85: */
+			huffman.Triple{-1, -1, 74},   /*  86: (5, 3) 26 bits */
+			huffman.Triple{-1, -1, 68},   /*  87: (5,-3) 26 bits */
+			huffman.Triple{89, 102, -1},  /*  88: */
+			huffman.Triple{90, 97, -1},   /*  89: */
+			huffman.Triple{91, 92, -1},   /*  90: */
+			huffman.Triple{-1, -1, 26},   /*  91: (2,-6) 28 bits */
+			huffman.Triple{93, 94, -1},   /*  92: */
+			huffman.Triple{-1, -1, 83},   /*  93: (6,-1) 29 bits */
+			huffman.Triple{95, 96, -1},   /*  94: */
+			huffman.Triple{-1, -1, 75},   /*  95: (5, 4) 30 bits */
+			huffman.Triple{-1, -1, 67},   /*  96: (5,-4) 30 bits */
+			huffman.Triple{98, 99, -1},   /*  97: */
+			huffman.Triple{-1, -1, 84},   /*  98: (6, 0) 28 bits */
+			huffman.Triple{100, 101, -1}, /*  99: */
+			huffman.Triple{-1, -1, 63},   /* 100: (4, 5) 29 bits */
+			huffman.Triple{-1, -1, 53},   /* 101: (4,-5) 29 bits */
+			huffman.Triple{103, 140, -1}, /* 102: */
+			huffman.Triple{104, 139, -1}, /* 103: */
+			huffman.Triple{105, 108, -1}, /* 104: */
+			huffman.Triple{106, 107, -1}, /* 105: */
+			huffman.Triple{-1, -1, 86},   /* 106: (6, 2) 30 bits */
+			huffman.Triple{-1, -1, 82},   /* 107: (6,-2) 30 bits */
+			huffman.Triple{109, 138, -1}, /* 108: */
+			huffman.Triple{110, 111, -1}, /* 109: */
+			huffman.Triple{-1, -1, 39},   /* 110: (3,-6) 31 bits */
+			huffman.Triple{112, 137, -1}, /* 111: */
+			huffman.Triple{113, 114, -1}, /* 112: */
+			huffman.Triple{-1, -1, 81},   /* 113: (6,-3) 33 bits */
+			huffman.Triple{115, 134, -1}, /* 114: */
+			huffman.Triple{116, 133, -1}, /* 115: */
+			huffman.Triple{117, 118, -1}, /* 116: */
+			huffman.Triple{-1, -1, 52},   /* 117: (4,-6) 36 bits */
+			huffman.Triple{119, 132, -1}, /* 118: */
+			huffman.Triple{120, 121, -1}, /* 119: */
+			huffman.Triple{-1, -1, 80},   /* 120: (6,-4) 38 bits */
+			huffman.Triple{122, 125, -1}, /* 121: */
+			huffman.Triple{123, 124, -1}, /* 122: */
+			huffman.Triple{-1, -1, 77},   /* 123: (5, 6) 40 bits */
+			huffman.Triple{-1, -1, 65},   /* 124: (5,-6) 40 bits */
+			huffman.Triple{126, 131, -1}, /* 125: */
+			huffman.Triple{127, 128, -1}, /* 126: */
+			huffman.Triple{-1, -1, 79},   /* 127: (6,-5) 41 bits */
+			huffman.Triple{129, 130, -1}, /* 128: */
+			huffman.Triple{-1, -1, 90},   /* 129: (6, 6) 42 bits */
+			huffman.Triple{-1, -1, 78},   /* 130: (6,-6) 42 bits */
+			huffman.Triple{-1, -1, 89},   /* 131: (6, 5) 40 bits */
+			huffman.Triple{-1, -1, 88},   /* 132: (6, 4) 37 bits */
+			huffman.Triple{-1, -1, 76},   /* 133: (5, 5) 35 bits */
+			huffman.Triple{135, 136, -1}, /* 134: */
+			huffman.Triple{-1, -1, 66},   /* 135: (5,-5) 35 bits */
+			huffman.Triple{-1, -1, 64},   /* 136: (4, 6) 35 bits */
+			huffman.Triple{-1, -1, 87},   /* 137: (6, 3) 32 bits */
+			huffman.Triple{-1, -1, 51},   /* 138: (3, 6) 30 bits */
+			huffman.Triple{-1, -1, 85},   /* 139: (6, 1) 28 bits */
+			huffman.Triple{-1, -1, 38},   /* 140: (2, 6) 27 bits */
+			huffman.Triple{-1, -1, 12},   /* 141: (0, 6) 24 bits */
+			huffman.Triple{143, 148, -1}, /* 142: */
+			huffman.Triple{144, 145, -1}, /* 143: */
+			huffman.Triple{-1, -1, 0},    /* 144: (0,-6) 24 bits */
+			huffman.Triple{146, 147, -1}, /* 145: */
+			huffman.Triple{-1, -1, 25},   /* 146: (1, 6) 25 bits */
+			huffman.Triple{-1, -1, 13},   /* 147: (1,-6) 25 bits */
+			huffman.Triple{149, 150, -1}, /* 148: */
+			huffman.Triple{-1, -1, 50},   /* 149: (3, 5) 24 bits */
+			huffman.Triple{-1, -1, 40},   /* 150: (3,-5) 24 bits */
+			huffman.Triple{152, 153, -1}, /* 151: */
+			huffman.Triple{-1, -1, 73},   /* 152: (5, 2) 22 bits */
+			huffman.Triple{-1, -1, 69},   /* 153: (5,-2) 22 bits */
+			huffman.Triple{-1, -1, 24},   /* 154: (1, 5) 18 bits */
+			huffman.Triple{-1, -1, 36},   /* 155: (2, 4) 15 bits */
+			huffman.Triple{157, 158, -1}, /* 156: */
+			huffman.Triple{-1, -1, 28},   /* 157: (2,-4) 15 bits */
+			huffman.Triple{159, 160, -1}, /* 158: */
+			huffman.Triple{-1, -1, 60},   /* 159: (4, 2) 16 bits */
+			huffman.Triple{-1, -1, 56},   /* 160: (4,-2) 16 bits */
+			huffman.Triple{162, 163, -1}, /* 161: */
+			huffman.Triple{-1, -1, 48},   /* 162: (3, 3) 14 bits */
+			huffman.Triple{-1, -1, 42},   /* 163: (3,-3) 14 bits */
+			huffman.Triple{-1, -1, 23},   /* 164: (1, 4) 12 bits */
+			huffman.Triple{-1, -1, 47},   /* 165: (3, 2) 11 bits */
+			huffman.Triple{167, 170, -1}, /* 166: */
+			huffman.Triple{168, 169, -1}, /* 167: */
+			huffman.Triple{-1, -1, 43},   /* 168: (3,-2) 11 bits */
+			huffman.Triple{-1, -1, 10},   /* 169: (0, 4) 11 bits */
+			huffman.Triple{171, 172, -1}, /* 170: */
+			huffman.Triple{-1, -1, 2},    /* 171: (0,-4) 11 bits */
+			huffman.Triple{173, 174, -1}, /* 172: */
+			huffman.Triple{-1, -1, 15},   /* 173: (1,-4) 12 bits */
+			huffman.Triple{175, 178, -1}, /* 174: */
+			huffman.Triple{176, 177, -1}, /* 175: */
+			huffman.Triple{-1, -1, 59},   /* 176: (4, 1) 14 bits */
+			huffman.Triple{-1, -1, 57},   /* 177: (4,-1) 14 bits */
+			huffman.Triple{-1, -1, 58},   /* 178: (4, 0) 13 bits */
+			huffman.Triple{-1, -1, 9},    /* 179: (0, 3)  7 bits */
+			huffman.Triple{-1, -1, 21},   /* 180: (1, 2)  5 bits */
 		},
 	}
 
@@ -1095,7 +1389,7 @@ func GetParam(version int) *BlissBParam {
 			9,              /* N bits */
 			huffman3,       /* Huffman Code */
 			7,              /* nz1 */
-			2,              /* nz2 */
+			4,              /* nz2 */
 		},
 
 		/* bliss-b 4 */
@@ -1127,7 +1421,7 @@ func GetParam(version int) *BlissBParam {
 			9,              /* N bits */
 			huffman4,       /* Huffman Code */
 			7,              /* nz1 */
-			2,              /* nz2 */
+			7,              /* nz2 */
 		},
 	}
 

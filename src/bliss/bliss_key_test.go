@@ -129,7 +129,7 @@ func TestKeySerialization(t *testing.T) {
 		{
 			pub := key.PublicKey()
 			enc := pub.Serialize()
-			fmt.Printf("Size of public key for BLISS-%d: %d bytes\n", i, len(enc))
+			fmt.Printf("Size of public key for BLISS-%d: %d bytes (%d bits)\n", i, len(enc), len(enc)*8)
 			tmp, err := DeserializeBlissPublicKey(enc)
 			if err != nil {
 				t.Errorf("Error in decoding public key: %s", err.Error())
@@ -141,7 +141,7 @@ func TestKeySerialization(t *testing.T) {
 
 		{
 			enc := key.Serialize()
-			fmt.Printf("Size of Private key for BLISS-%d: %d bytes\n", i, len(enc))
+			fmt.Printf("Size of Private key for BLISS-%d: %d bytes (%d bits)\n", i, len(enc), len(enc)*8)
 			tmp, err := DeserializeBlissPrivateKey(enc)
 			if err != nil {
 				t.Errorf("Error in decoding private key: %s", err.Error())

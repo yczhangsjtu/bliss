@@ -334,32 +334,38 @@ func DecodeBlissSignature(data []byte) (*BlissSignature, error) {
 }
 
 func (sig *BlissSignature) Serialize() []byte {
-	packer := huffman.NewBitPacker()
+	cpacker := huffman.NewBitPacker()
+	zpacker := huffman.NewBitPacker()
 	n := sig.Param().N
 	nbit := sig.Param().Nbits
 	version := sig.Param().Version
-	nz1 := sig.Param().Nbz1
 	nz2 := sig.Param().Nbz2
 	kappa := sig.Param().Kappa
 	code := sig.Param().Code
 	z1data := sig.z1.GetData()
 	z2data := sig.z2.GetData()
-	ret := make([]byte, n+1)
+	ret := make([]byte, 1)
 	ret[0] = byte(version)
-	for i := 0; i < int(n); i++ {
-		ret[i+1] = byte(z1data[i] & 0xff)
-	}
 	for i := 0; i < int(kappa); i++ {
-		packer.WriteBits(uint64(sig.c[i]), nbit)
+		cpacker.WriteBits(uint64(sig.c[i]), nbit)
 	}
-	ret = append(ret, packer.Data()...)
+	for i := 0; i < int(n); i++ {
+		bits := Abs(z1data[i]) & 0xff
+		if z1data[i] < 0 {
+			bits |= 0x100
+		}
+		zpacker.WriteBits(uint64(bits), 9)
+	}
+	ret = append(ret, zpacker.Data()...)
+	ret = append(ret, cpacker.Data()...)
 	encoder := huffman.NewHuffmanEncoder(code)
 	for i := 0; i < int(n); i++ {
-		z1 := z1data[i] >> 8
+		z1 := Abs(z1data[i]) >> 8
 		z2 := z2data[i]
-		index := (int(z1)+int(nz1)/2)*(int(nz2)*2-1) + int(z2) + int(nz2) - 1
+		index := int(z1)*(int(nz2)*2-1) + int(z2) + int(nz2) - 1
 		if index < 0 {
 			fmt.Printf("z1 = %d, z2 = %d, index = %d\n", z1, z2, index)
+			return []byte{}
 		}
 		err := encoder.Update(index)
 		if err != nil {
@@ -383,7 +389,7 @@ func DeserializeBlissSignature(data []byte) (*BlissSignature, error) {
 	n := param.N
 	kappa := param.Kappa
 	nbit := param.Nbits
-	nz1 := param.Nbz1
+	// nz1 := param.Nbz1
 	nz2 := param.Nbz2
 	code := param.Code
 
@@ -392,13 +398,23 @@ func DeserializeBlissSignature(data []byte) (*BlissSignature, error) {
 	cdata := make([]uint32, kappa)
 
 	csize := (nbit*kappa + 7) / 8
-	lowsrc := data[1 : 1+n]
-	csrc := data[1+n : 1+n+csize]
-	z1z2 := data[1+n+csize:]
+	lowsize := 9 * n / 8
+	lowsrc := data[1 : 1+lowsize]
+	csrc := data[1+lowsize : 1+lowsize+csize]
+	z1z2 := data[1+lowsize+csize:]
 
 	decoder := huffman.NewHuffmanDecoder(code, z1z2)
+	zunpacker := huffman.NewBitUnpacker(lowsrc, 9*n)
 	for i := 0; i < int(n); i++ {
-		z1low := int32(lowsrc[i])
+		bits, err := zunpacker.ReadBits(9)
+		if err != nil {
+			return nil, fmt.Errorf("Error in unpacking lower part of z1: %s", err.Error())
+		}
+		sign := int32(1)
+		if bits&0x100 > 0 {
+			sign = int32(-1)
+		}
+		z1low := int32(bits & 0xff)
 		index, err := decoder.Next()
 		if err != nil {
 			return nil, fmt.Errorf("Error in decoding huffman: %s", err.Error())
@@ -406,21 +422,22 @@ func DeserializeBlissSignature(data []byte) (*BlissSignature, error) {
 		if index < 0 {
 			return nil, fmt.Errorf("Invalid index %d", index)
 		}
-		z1high := index/(int(nz2)*2-1) - int(nz1)/2
+		z1high := index / (int(nz2)*2 - 1)
 		z2 := int32(index%(int(nz2)*2-1) - int(nz2) + 1)
-		z1 := int32(z1high<<8) | z1low
+		z1 := sign * (int32(z1high<<8) | z1low)
 		z1data[i] = z1
 		z2data[i] = z2
 	}
 
-	unpacker := huffman.NewBitUnpacker(csrc, nbit*kappa)
+	cunpacker := huffman.NewBitUnpacker(csrc, nbit*kappa)
 	for i := 0; i < int(kappa); i++ {
-		bits, err := unpacker.ReadBits(nbit)
+		bits, err := cunpacker.ReadBits(nbit)
 		if err != nil {
 			return nil, fmt.Errorf("Error in unpacking c: %s", err.Error())
 		}
 		cdata[i] = uint32(bits)
 	}
+
 	return &BlissSignature{z1, z2, cdata[:]}, nil
 }
 
