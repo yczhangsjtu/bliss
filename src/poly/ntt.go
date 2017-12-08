@@ -1,3 +1,4 @@
+// Package poly provides basic manipulation of polynomials
 package poly
 
 import (

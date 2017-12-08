@@ -26,7 +26,7 @@ func GeneratePrivateKey(version int, entropy *sampler.Entropy) (*BlissPrivateKey
 	}
 	// s2 = 2g-1
 	s2.ScalarMul(2)
-	s2.ScalarInc(-1)
+	s2.GetData()[0] -= 1
 
 	t, err := s2.NTT()
 	if err != nil {
