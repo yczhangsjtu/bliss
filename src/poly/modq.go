@@ -1,5 +1,8 @@
+// Package poly provides basic manipulation of polynomials
 package poly
 
+// Increase the polynomial by another one, and bound the result in [0,q) by
+// modulo q.
 func (lh *PolyArray) IncModQ(rh *PolyArray) *PolyArray {
 	if lh.n != rh.n || lh.q != rh.q {
 		return nil
@@ -11,11 +14,8 @@ func (lh *PolyArray) IncModQ(rh *PolyArray) *PolyArray {
 	return lh
 }
 
-func (lh *PolyArray) ScalarIncModQ(rh int32) *PolyArray {
-	lh.data[0] = addMod(lh.data[0], rh, lh.q)
-	return lh
-}
-
+// Return a copy of addition of two polynomials, with each element bound in
+// [0,q) modulo q.
 func (lh *PolyArray) AddModQ(rh *PolyArray) *PolyArray {
 	if lh.n != rh.n || lh.q != rh.q {
 		return nil
@@ -33,6 +33,8 @@ func (lh *PolyArray) AddModQ(rh *PolyArray) *PolyArray {
 	return ret
 }
 
+// Decrease the polynomial by another one, and bound the result in [0,q) modulo
+// q.
 func (lh *PolyArray) DecModQ(rh *PolyArray) *PolyArray {
 	if lh.n != rh.n || lh.q != rh.q {
 		return nil
@@ -44,6 +46,8 @@ func (lh *PolyArray) DecModQ(rh *PolyArray) *PolyArray {
 	return lh
 }
 
+// Return a copy of the difference of two polynomials, with each element bound
+// in [0,q) modulo q.
 func (lh *PolyArray) SubModQ(rh *PolyArray) *PolyArray {
 	if lh.n != rh.n || lh.q != rh.q {
 		return nil
@@ -61,6 +65,8 @@ func (lh *PolyArray) SubModQ(rh *PolyArray) *PolyArray {
 	return ret
 }
 
+// Scale each element by the corresponding one in another polynomial.
+// Bound the result in [0,q) modulo q.
 func (lh *PolyArray) MulModQ(rh *PolyArray) *PolyArray {
 	if lh.n != rh.n || lh.q != rh.q {
 		return nil
@@ -72,6 +78,7 @@ func (lh *PolyArray) MulModQ(rh *PolyArray) *PolyArray {
 	return lh
 }
 
+// Return product of two polynomials with each element bound in [0,q) modulo q.
 func (lh *PolyArray) TimesModQ(rh *PolyArray) *PolyArray {
 	if lh.n != rh.n || lh.q != rh.q {
 		return nil
@@ -89,6 +96,7 @@ func (lh *PolyArray) TimesModQ(rh *PolyArray) *PolyArray {
 	return ret
 }
 
+// Scale the polynomial by constant, and bound the result in [0,q) modulo q.
 func (lh *PolyArray) ScalarMulModQ(rh int32) *PolyArray {
 	n, q := lh.n, lh.q
 	for i := 0; i < int(n); i++ {
@@ -97,6 +105,8 @@ func (lh *PolyArray) ScalarMulModQ(rh int32) *PolyArray {
 	return lh
 }
 
+// Return a multiple of the polynomial, with each element bound in [0,q) modulo
+// q.
 func (lh *PolyArray) ScalarTimesModQ(rh int32) *PolyArray {
 	n, q := lh.n, lh.q
 	var ret *PolyArray
@@ -111,6 +121,7 @@ func (lh *PolyArray) ScalarTimesModQ(rh int32) *PolyArray {
 	return ret
 }
 
+// Return an exponentiation of the polynomial modulo q.
 func (lh *PolyArray) ExpModQ(e uint32) *PolyArray {
 	n, q := lh.n, lh.q
 	var ret *PolyArray
@@ -125,6 +136,7 @@ func (lh *PolyArray) ExpModQ(e uint32) *PolyArray {
 	return ret
 }
 
+// Bound the coefficients of a polynomial in [0,q) modulo q.
 func (lh *PolyArray) ModQ() *PolyArray {
 	n, q := lh.n, lh.q
 	for i := 0; i < int(n); i++ {
@@ -133,14 +145,20 @@ func (lh *PolyArray) ModQ() *PolyArray {
 	return lh
 }
 
+// Bound an integer in [0,q) modulo q.
+// This is implemented as a method of polyarray to save the effort of
+// retrieving the modulo q of this polynomial from outside this package.
 func (lh *PolyArray) NumModQ(a int32) int32 {
 	return bound(a, lh.q)
 }
 
+// Bound an integer in [0,2q) modulo 2q.
+// This is used in BLISS signature generation algorithm.
 func (lh *PolyArray) NumMod2Q(a int32) int32 {
 	return bound(a%int32(lh.q*2), lh.q*2)
 }
 
+// Bound the coefficients of a polynomial in [0,2q) modulo 2q.
 func (lh *PolyArray) Mod2Q() *PolyArray {
 	n := lh.n
 	for i := 0; i < int(n); i++ {
@@ -149,6 +167,7 @@ func (lh *PolyArray) Mod2Q() *PolyArray {
 	return lh
 }
 
+// Bound the coefficients of a polynomial in [0,p) modulo p.
 func (lh *PolyArray) ModP() *PolyArray {
 	n := lh.n
 	for i := 0; i < int(n); i++ {
