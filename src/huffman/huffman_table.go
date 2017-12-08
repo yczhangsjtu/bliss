@@ -1,5 +1,7 @@
+// Package huffman implements the huffman encoding and decoding scheme.
 package huffman
 
+// Lookup for the huffman table for a given BLISS version.
 func GetHuffmanTable(version int) *HuffmanCode {
 	huffman0 := &HuffmanCode{
 		[]Pair{
