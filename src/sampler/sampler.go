@@ -1,3 +1,6 @@
+// Package sampler implements all the needed cryptographic samplers needed in BLISS.
+// The randomness is provided by applying SHA3-512 to an incrementing 512-bit seed.
+// The sampler is deterministic with respect to the original seed.
 package sampler
 
 import (
@@ -5,6 +8,10 @@ import (
 	"params"
 )
 
+// The Sampler class makes use of the random streams from an entropy, and
+// samples from a number of discrete distributions used in the BLISS algorithm.
+// It also makes use of some precomputed tables which are specified by the
+// BLISS parameter set.
 type Sampler struct {
 	sigma      uint32
 	ell        uint32
@@ -28,58 +35,61 @@ type Sampler struct {
 	random *Entropy
 }
 
-func invalidSampler() *Sampler {
-	return &Sampler{0, 0, 0, 0, 0, 0, []uint8{}, 0, 0, 0, 0, 0, 0,
-		[]uint8{}, []uint8{}, nil}
-}
-
+// Create a new sampler directly specifying the parameters sigma, ell and prec.
+// The parameter ell and prec are for sampling bernoulli distribution of
+// probability exp(x), and sigma is for sampling discrete Gaussian.
+// This constructor will lookup for the precomputated tables for the given
+// combination of parameters.
 func NewSampler(sigma, ell, prec uint32, entropy *Entropy) (*Sampler, error) {
 	columns := prec / 8
 	ctable, err := getTable(sigma, ell, prec)
 	if err != nil {
-		return invalidSampler(), err
+		return nil, err
 	}
 	ksigma := getKSigma(sigma, prec)
 	if ksigma == 0 {
-		return invalidSampler(), fmt.Errorf("Failed to get kSigma")
+		return nil, fmt.Errorf("Failed to get kSigma")
 	}
 	ksigmabits := getKSigmaBits(sigma, prec)
 	if ksigmabits == 0 {
-		return invalidSampler(), fmt.Errorf("Failed to get kSigmaBits")
+		return nil, fmt.Errorf("Failed to get kSigmaBits")
 	}
 	sigma1, sigma2, ell1, ell2 := splitSigma(sigma)
 	if sigma1 == 0 || sigma2 == 0 || ell1 == 0 || ell2 == 0 {
-		return invalidSampler(), fmt.Errorf("Failed to split sigma")
+		return nil, fmt.Errorf("Failed to split sigma")
 	}
 	ctable1, err := getTable(sigma1, ell1, prec)
 	if err != nil {
-		return invalidSampler(), err
+		return nil, err
 	}
 	ksigma1 := getKSigma(sigma1, prec)
 	if ksigma1 == 0 {
-		return invalidSampler(), fmt.Errorf("Failed to get kSigma1")
+		return nil, fmt.Errorf("Failed to get kSigma1")
 	}
 	ksigmabits1 := getKSigmaBits(sigma1, prec)
 	if ksigmabits1 == 0 {
-		return invalidSampler(), fmt.Errorf("Failed to get kSigmaBits1")
+		return nil, fmt.Errorf("Failed to get kSigmaBits1")
 	}
 	ctable2, err := getTable(sigma2, ell2, prec)
 	if err != nil {
-		return invalidSampler(), err
+		return nil, err
 	}
 	ksigma2 := getKSigma(sigma2, prec)
 	if ksigma2 == 0 {
-		return invalidSampler(), fmt.Errorf("Failed to get kSigma2")
+		return nil, fmt.Errorf("Failed to get kSigma2")
 	}
 	ksigmabits2 := getKSigmaBits(sigma2, prec)
 	if ksigmabits2 == 0 {
-		return invalidSampler(), fmt.Errorf("Failed to get kSigmaBits2")
+		return nil, fmt.Errorf("Failed to get kSigmaBits2")
 	}
 	return &Sampler{sigma, ell, prec, columns, ksigma, ksigmabits, ctable,
 		ell1, ell2, ksigma1, ksigma2, ksigmabits1, ksigmabits2, ctable1, ctable2,
 		entropy}, nil
 }
 
+// Create a new sampler given BLISS version number. This constructor looks up
+// for the BLISS parameter set by the version number, and invokes the more
+// specific constructor with the parameters specified by BLISS.
 func New(version int, entropy *Entropy) (*Sampler, error) {
 	param := params.GetParam(version)
 	if param == nil {
@@ -88,10 +98,10 @@ func New(version int, entropy *Entropy) (*Sampler, error) {
 	return NewSampler(param.Sigma, param.Ell, param.Prec, entropy)
 }
 
-// Sample Bernoulli distribution with probability p
+// Sample Bernoulli distribution with probability p.
 // p is stored as a large big-endian integer in an array
 // the real probability is p/2^d, where d is the number of
-// bits of p
+// bits of p.
 func (sampler *Sampler) sampleBer(p []uint8) bool {
 	for _, pi := range p {
 		uc := sampler.random.Char()
@@ -105,7 +115,7 @@ func (sampler *Sampler) sampleBer(p []uint8) bool {
 	return true
 }
 
-// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2))
+// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2)).
 func (sampler *Sampler) sampleBerExp(x uint32, table []uint8, ell uint32) bool {
 	ri := ell - 1
 	mask := uint32(1) << ri
@@ -122,7 +132,8 @@ func (sampler *Sampler) sampleBerExp(x uint32, table []uint8, ell uint32) bool {
 	return true
 }
 
-// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2))
+// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2)).
+// This is the constant-time version implemented against side-channel attacks.
 func (sampler *Sampler) sampleBerExpCt(x uint32, table []uint8, ell uint32) bool {
 	var xi, i, ret, start, bit uint32
 	start = 0
@@ -143,7 +154,18 @@ func (sampler *Sampler) sampleBerExpCt(x uint32, table []uint8, ell uint32) bool
 	return ret != 0
 }
 
-// Sample Bernoulli distribution with probability p = 1/cosh(-x/(2*sigma^2))
+// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2)).
+func (sampler *Sampler) SampleBerExp(x uint32) bool {
+	return sampler.sampleBerExp(x, sampler.ctable, sampler.ell)
+}
+
+// Sample Bernoulli distribution with probability p = exp(-x/(2*sigma^2)).
+// This is the constant-time version implemented against side-channel attacks.
+func (sampler *Sampler) SampleBerExpCt(x uint32) bool {
+	return sampler.sampleBerExpCt(x, sampler.ctable, sampler.ell)
+}
+
+// Sample Bernoulli distribution with probability p = 1/cosh(-x/(2*sigma^2)).
 func (sampler *Sampler) sampleBerCosh(x int32, table []uint8, ell uint32) bool {
 	if x < 0 {
 		x = -x
@@ -164,14 +186,7 @@ func (sampler *Sampler) sampleBerCosh(x int32, table []uint8, ell uint32) bool {
 	}
 }
 
-func (sampler *Sampler) SampleBerExp(x uint32) bool {
-	return sampler.sampleBerExp(x, sampler.ctable, sampler.ell)
-}
-
-func (sampler *Sampler) SampleBerExpCt(x uint32) bool {
-	return sampler.sampleBerExpCt(x, sampler.ctable, sampler.ell)
-}
-
+// Sample Bernoulli distribution with probability p = 1/cosh(-x/(2*sigma^2)).
 func (sampler *Sampler) SampleBerCosh(x int32) bool {
 	return sampler.sampleBerCosh(x, sampler.ctable, sampler.ell)
 }
@@ -196,8 +211,7 @@ restart:
 	return 0
 }
 
-// Sample according to Discrete Gauss Distribution
-// exp(-x^2/(2*sigma*sigma))
+// Sample according to Discrete Gauss Distribution exp(-x^2/(2*sigma*sigma)).
 func (sampler *Sampler) sampleGauss(ksigma uint16, ksigmabits uint16, table []uint8, ell uint32) int32 {
 	var x, y uint32
 	var u bool
@@ -226,12 +240,13 @@ func (sampler *Sampler) sampleGauss(ksigma uint16, ksigmabits uint16, table []ui
 	}
 }
 
+// Sample according to Discrete Gauss Distribution exp(-x^2/(2*sigma*sigma)).
 func (sampler *Sampler) SampleGauss() int32 {
 	return sampler.sampleGauss(sampler.kSigma, sampler.kSigmaBits, sampler.ctable, sampler.ell)
 }
 
-// Sample according to Discrete Gauss Distribution, constant time
-// exp(-x^2/(2*sigma*sigma))
+// Sample according to Discrete Gauss Distribution exp(-x^2/(2*sigma*sigma)).
+// This is the constant-time version implemented against side-channel attacks.
 func (sampler *Sampler) sampleGaussCt(ksigma uint16, ksigmabits uint16, table []uint8, ell uint32) int32 {
 	var x, y uint32
 	var u bool
@@ -260,16 +275,20 @@ func (sampler *Sampler) sampleGaussCt(ksigma uint16, ksigmabits uint16, table []
 	}
 }
 
+// Sample according to Discrete Gauss Distribution exp(-x^2/(2*sigma*sigma)).
+// This is the constant-time version implemented against side-channel attacks.
 func (sampler *Sampler) SampleGaussCt() int32 {
 	return sampler.sampleGaussCt(sampler.kSigma, sampler.kSigmaBits, sampler.ctable, sampler.ell)
 }
 
-// Sample according to Discrete Gauss Distribution, by sigma1
+// Sample according to Discrete Gauss Distribution, with parameters about sigma1.
+// This is the constant-time version implemented against side-channel attacks.
 func (sampler *Sampler) SampleGaussCtAlpha() int32 {
 	return sampler.sampleGaussCt(sampler.kSigma1, sampler.kSigmaBits1, sampler.ctable1, sampler.ell1)
 }
 
-// Sample according to Discrete Gauss Distribution, by sigma2
+// Sample according to Discrete Gauss Distribution, with parameters about sigma2.
+// This is the constant-time version implemented against side-channel attacks.
 func (sampler *Sampler) SampleGaussCtBeta() int32 {
 	return sampler.sampleGaussCt(sampler.kSigma2, sampler.kSigmaBits2, sampler.ctable2, sampler.ell2)
 }
