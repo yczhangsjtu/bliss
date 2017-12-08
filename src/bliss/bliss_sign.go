@@ -1,3 +1,6 @@
+// Package bliss presents the core API of the BLISS signature scheme.
+// Specifically, the data types for Bliss Private Key, Public Key and Signature
+// and the algorithms for Key Generation, Signature Generation and Verification
 package bliss
 
 import (
@@ -9,17 +12,26 @@ import (
 	"sampler"
 )
 
+// The BLISS signature structure.
+// A BLISS signature contains two polynomials z1 and z2 that are bounded by
+// B_inf and ceil(B_inf/2^d) respectively. The signature also contains a
+// challenge c, which is an index set of size kappa in [0,n).
 type BlissSignature struct {
 	z1 *poly.PolyArray
 	z2 *poly.PolyArray
 	c  []uint32
 }
 
+// Get a human readable form of a BLISS signature.
 func (sig *BlissSignature) String() string {
 	return fmt.Sprintf("{z1:%s,z2:%s,c:%d}",
 		sig.z1.String(), sig.z2.String(), sig.c)
 }
 
+// Compute the special Hash function from a pair of polynomial and message
+// digest to a challenge, i.e. an index set of size kappa in [0,n).
+// The cryptographic hash (in this case SHA3-512) of (u||hash) is used as the
+// random source to generate the indices.
 func computeC(kappa uint32, u *poly.PolyArray, hash []byte) []uint32 {
 	indices := make([]uint32, kappa)
 	data := u.GetData()
@@ -74,6 +86,16 @@ func computeC(kappa uint32, u *poly.PolyArray, hash []byte) []uint32 {
 	return []uint32{}
 }
 
+// The GreedySC algorithm proposed in [Accelerating Bliss]. This algorithm
+// modifies (v1,v2) := (s1,s2)*c, where c is the challenge polynomial
+// represented by an index set, i.e. a sparse polynomial of coefficients 0 and 1,
+// and the 1s are specified by the index set.
+// GreedySC algorithm modifies the multiplication by effectively computing
+// (s1,s2)*c', where c' is almost identical to c, except for the signs of a
+// subset of the nonzero (i.e. equals 1) coefficients.
+// c' is selected to try to minimize the norm of (s1,s2)*c'.
+// This algorithm is not the most optimized, but the result is sufficiently
+// satisfactory.
 func greedySc(indices []uint32, s1, s2 *poly.PolyArray) (v1, v2 *poly.PolyArray) {
 	n := s1.Param().N
 	v1, _ = poly.NewPolyArray(s1.Param())
@@ -114,6 +136,7 @@ func greedySc(indices []uint32, s1, s2 *poly.PolyArray) (v1, v2 *poly.PolyArray)
 	return
 }
 
+// The BLISS signature generation algorithm.
 func (key *BlissPrivateKey) Sign(msg []byte, entropy *sampler.Entropy) (*BlissSignature, error) {
 	kappa := key.Param().Kappa
 	version := key.Param().Version
@@ -175,6 +198,8 @@ restart:
 	return &BlissSignature{z1, z2, indices}, nil
 }
 
+// The BLISS signature generation algorithm, which is supposed to be secure
+// against side-channel attacks.
 func (key *BlissPrivateKey) SignAgainstSideChannel(msg []byte, entropy *sampler.Entropy) (*BlissSignature, error) {
 	kappa := key.Param().Kappa
 	version := key.Param().Version
@@ -247,6 +272,7 @@ restart:
 	return &BlissSignature{z1, z2, indices}, nil
 }
 
+// The BLISS signature verification algorithm.
 func (key *BlissPublicKey) Verify(msg []byte, sig *BlissSignature) (bool, error) {
 	if key.a.Param().Version != sig.z1.Param().Version {
 		return false, fmt.Errorf("Mismatched signature version")
@@ -286,125 +312,28 @@ func (key *BlissPublicKey) Verify(msg []byte, sig *BlissSignature) (bool, error)
 	return true, nil
 }
 
+// Get the BLISS parameter set from the signature.
 func (sig *BlissSignature) Param() *params.BlissBParam {
 	return sig.z1.Param()
 }
 
-func (sig *BlissSignature) Encode() []byte {
-	n := sig.Param().N
-	kappa := sig.Param().Kappa
-	z1len := n * 2
-	z2len := n + n/8
-	clen := 2 * kappa
-
-	z1data := sig.z1.GetData()
-	z2data := sig.z2.GetData()
-	cdata := sig.c
-
-	ret := make([]byte, 1+z1len+z2len+clen)
-	ret[0] = byte(sig.Param().Version)
-
-	z1 := ret[1 : 1+z1len]
-	z2 := ret[1+z1len : 1+z1len+z2len]
-	c := ret[1+z1len+z2len:]
-
-	// It is easy to store z1. Take each element as
-	// an uint16, although they are actually a littble
-	// bit smaller than 16 bits.
-	for i := 0; i < int(n); i++ {
-		tmp := sig.z1.NumModQ(z1data[i])
-		z1[i*2] = byte(uint16(tmp) >> 8)
-		z1[i*2+1] = byte(uint16(tmp) & 0xff)
-	}
-
-	// z2 is much smaller than z1, bounded by p/2
-	// An additional bit array is used to store the signs
-	z2left := z2[:n]
-	z2right := z2[n:]
-	for i := 0; i < int(n); i++ {
-		z2left[i] = byte(uint16(Abs(z2data[i])) & 0xff)
-	}
-	for i := 0; i < int(n)/8; i++ {
-		tmp := byte(0)
-		for j := 0; j < 8; j++ {
-			tmp <<= 1
-			if z2data[i*8+j] > 0 {
-				tmp += 1
-			}
-		}
-		// Each extra bit takes a byte array of size n/8
-		z2right[i] = tmp
-	}
-
-	// c is represented by a list of kappa integers in [0,n)
-	// For simplicity, we use 2 bytes to store each index.
-	for i := 0; i < int(kappa); i++ {
-		c[i*2] = byte(uint16(cdata[i]) >> 8)
-		c[i*2+1] = byte(uint16(cdata[i]) & 0xff)
-	}
-
-	return ret[:]
-}
-
-func DecodeBlissSignature(data []byte) (*BlissSignature, error) {
-	z1, err := poly.New(int(data[0]))
-	if err != nil {
-		return nil, fmt.Errorf("Error in generating new polyarray: %s", err.Error())
-	}
-	param := z1.Param()
-	z2, err := poly.NewPolyArray(param)
-	if err != nil {
-		return nil, fmt.Errorf("Error in generating new polyarray: %s", err.Error())
-	}
-	n := param.N
-	kappa := param.Kappa
-	q := param.Q
-	z1len := n * 2
-	z2len := n + n/8
-	clen := 2 * kappa
-	if len(data) != int(z1len+z2len+clen+1) {
-		return nil, fmt.Errorf("Wrong length of data for version %d: %d",
-			param.Version, len(data))
-	}
-
-	cdata := make([]uint32, kappa)
-	z1data := z1.GetData()
-	z2data := z2.GetData()
-	ret := &BlissSignature{z1, z2, cdata[:]}
-
-	z1src := data[1 : 1+z1len]
-	z2src := data[1+z1len : 1+z1len+z2len]
-	csrc := data[1+z1len+z2len:]
-
-	for i := 0; i < int(n); i++ {
-		z1data[i] = (int32(z1src[i*2]) << 8) | (int32(z1src[i*2+1]))
-		if z1data[i] > int32(q/2) {
-			z1data[i] -= int32(q)
-		}
-	}
-
-	z2left := z2src[:n]
-	z2right := z2src[n:]
-	for i := 0; i < int(n); i++ {
-		z2data[i] = int32(z2left[i])
-	}
-	for i := 0; i < int(n)/8; i++ {
-		// Each extra bit takes a byte array of size n/8
-		tmp := z2right[i]
-		for j := 0; j < 8; j++ {
-			b := (tmp >> uint(7-j)) & 0x1
-			if b == 0 {
-				z2data[i*8+j] = -z2data[i*8+j]
-			}
-		}
-	}
-
-	for i := 0; i < int(kappa); i++ {
-		cdata[i] = (uint32(csrc[i*2]) << 8) | (uint32(csrc[i*2+1]))
-	}
-	return ret, nil
-}
-
+// Serialize the BLISS signature into binary form.
+// The signature is compressed by Huffman code.
+// To be accurate, part of the signature, i.e. part of s1 and the entire s2 is
+// compressed.
+// According to the BLISS paper, it is not suggested to compress the lower bits
+// of s1, which are relatively uniformly random.
+// We take the idea of StrongSwan implementation of BLISS and compress the pairs
+// (s1[i]/2^8, s2[i])_{i=0}^{n-1} by Huffman codes.
+// Our implementation is different from that of StrongSwan in that s1[i] is not
+// nonnegative, while the s1[i]'s in StrongSwan appear to be.
+// To make use of the Huffman table generation tool by StrongSwan, we compress
+// by huffman coding (abs(s1[i])/2^8, s2[i])_{i=0}^{n-1} instead, and save the
+// s1[i]&0xff and its sign (totally 9 bits) in byte array of size 9*n/8.
+// The challenge vector c is packed in byte array of size log(n)*kappa/8.
+// Finally, the entire data is prefixed by a byte specifying the BLISS version.
+// The signature format is
+// [ Version | low bits and sign of z1 | challenge c | huffman(z1/2^d,z2) ]
 func (sig *BlissSignature) Serialize() []byte {
 	cpacker := huffman.NewBitPacker()
 	zpacker := huffman.NewBitPacker()
@@ -448,6 +377,7 @@ func (sig *BlissSignature) Serialize() []byte {
 	return ret
 }
 
+// Deserialize a BLISS signature from binary form.
 func DeserializeBlissSignature(data []byte) (*BlissSignature, error) {
 	z1, err := poly.New(int(data[0]))
 	if err != nil {
@@ -513,6 +443,7 @@ func DeserializeBlissSignature(data []byte) (*BlissSignature, error) {
 	return &BlissSignature{z1, z2, cdata[:]}, nil
 }
 
+// A util function for computing absolute value of integers.
 func Abs(x int32) int32 {
 	if x < 0 {
 		return -x
