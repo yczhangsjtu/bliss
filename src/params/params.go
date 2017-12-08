@@ -4,6 +4,7 @@ import (
 	"huffman"
 )
 
+// Bliss Version Numbers
 const (
 	BLISS_B_0 = iota
 	BLISS_B_1
@@ -12,6 +13,8 @@ const (
 	BLISS_B_4
 )
 
+// A BlissBParam instance specifies all the parameters needed in the BLISS
+// algorithm.
 type BlissBParam struct {
 	Version int     /* the version of bliss-b */
 	Q       uint32  /* field modulus  */
@@ -42,6 +45,7 @@ type BlissBParam struct {
 	Nbz2    uint8
 }
 
+// Lookup the BLISS parameter for a given version number.
 func GetParam(version int) *BlissBParam {
 	/*
 	 * Roots of unity. q = 7681  n = 256
