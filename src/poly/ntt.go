@@ -4,6 +4,15 @@ import (
 	"errors"
 )
 
+// The Fast Fourier Transform, which is the core part of NTT.
+// The algorithm here is the Cooley-Tukey version of the FFT.
+// For an explanation of this algorithm, refer to
+// Chapter 12 of "William H. Press, etc: Numerical Recipes, 3ed".
+// This function copies this polynomial and apply the FFT to the copy.
+// The original polynomial is left unchanged.
+// TODO: implement the local version of FFT which applies the FFT directly
+//       to the original polynomial, and encapsulate the local version in the
+//       copy version.
 func (ma *PolyArray) FFT() (*PolyArray, error) {
 	var i, j, k uint32
 	n := ma.param.N
@@ -13,7 +22,9 @@ func (ma *PolyArray) FFT() (*PolyArray, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Copy the original polynomial into the returned value.
 	array.SetData(ma.data)
+	// v is used as a reference to the polynomial coefficients, for simplicity.
 	v := array.data
 
 	// Bit-Inverse Shuffle
@@ -57,13 +68,26 @@ func (ma *PolyArray) FFT() (*PolyArray, error) {
 	return array, nil
 }
 
+// Encapsulate the FFT into the NTT procedure. NTT differentiate from FFT
+// by a preprocessing procedure. In the preprocessing, multiply the i'th
+// element by psi^i, where psi is sqrt(omega) mod q, where omega is a n'th
+// root of unity mod q, which makes psi a 2n'th root of unity.
+// TODO: implement a local version.
 func (p *PolyArray) NTT() (*PolyArray, error) {
 	psi, err := NewPolyArray(p.param)
 	if err != nil {
 		return nil, err
 	}
+	// Copy the parameter into a poly array.
+	// p.param.Psi stores the array {psi^i}_{i=0}^{n-1}
+	// TODO: Save this copy procedure by doing the loop explicitly, instead of
+	//       utilizing the TimesModQ method of polyarray.
 	psi.SetData(p.param.Psi)
+	// Do the multiplication element-wise.
 	f := p.TimesModQ(psi)
+	// Apply the FFT.
+	// TODO: Save the intermediate polynomial f by replacing FFT with a
+	//       local version.
 	g, err := f.FFT()
 	if err != nil {
 		return nil, err
@@ -71,7 +95,15 @@ func (p *PolyArray) NTT() (*PolyArray, error) {
 	return g, nil
 }
 
+// The Inversion NTT procedure. Instead of using IFFT, this procedure is
+// carried out by still applying the FFT, based on the observation that FFT
+// and IFFT are basically equivalent except for a flip.
+// TODO: Implement a local version.
 func (ntt *PolyArray) INTT() (*PolyArray, error) {
+	// Copy the parameter into a poly array.
+	// p.param.RPsi stores the array {psi^-i}_{i=0}^{n-1}
+	// TODO: Save this copy procedure by doing the loop explicitly, instead of
+	//       utilizing the TimesModQ method of polyarray.
 	rpsi, err := NewPolyArray(ntt.param)
 	rpsi.SetData(ntt.param.RPsi)
 	if err != nil {
@@ -86,16 +118,24 @@ func (ntt *PolyArray) INTT() (*PolyArray, error) {
 	return f, nil
 }
 
+// Invert a polynomial, assuming that the polynomial is already in NTT form.
+// In NTT form, the polynomial inversion is done by an element-wise inversion
+// mod q. The inversion mod q is equal to taking exponentiation q-2 mod q,
+// according to Little Fermat's Theorem.
 func (ntt *PolyArray) InvertAsNTT() (*PolyArray, error) {
+	// Check if there is 0 element. If there is, the polynomial is noninvertible.
 	for i := 0; i < int(ntt.n); i++ {
 		if ntt.data[i] == 0 {
 			return nil, errors.New("PolyArray not invertible")
 		}
 	}
+	// Take the exponentiation q-2.
 	ret := ntt.ExpModQ(ntt.q - 2)
 	return ret, nil
 }
 
+// Multiply a polynomial by another polynomial in NTT form. The result is
+// a copy in polynomial form. The original polynomial remains.
 func (p *PolyArray) MultiplyNTT(ntt *PolyArray) (*PolyArray, error) {
 	lh, err := p.NTT()
 	if err != nil {
@@ -105,13 +145,19 @@ func (p *PolyArray) MultiplyNTT(ntt *PolyArray) (*PolyArray, error) {
 	return lh.INTT()
 }
 
+// The last post-processing procedure in inverse NTT.
+// Negate the first element (index 0), the 1..n-1 elements are turned around.
+// The procedure is applied directly to the original polynomial, and the
+// reference to this polynomial is returned.
 func (lh *PolyArray) flip() *PolyArray {
 	n, q := lh.n, lh.q
+	// The turn-around from 1 to n-1
 	for i, j := 1, n-1; i < int(j); i, j = i+1, j-1 {
 		tmp := lh.data[i]
 		lh.data[i] = lh.data[j]
 		lh.data[j] = tmp
 	}
+	// The negation of the first element
 	tmp := int32(q) & ((-lh.data[0]) >> 31)
 	lh.data[0] = tmp - lh.data[0]
 	return lh
