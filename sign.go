@@ -175,7 +175,7 @@ restart:
 	return &Signature{z1, z2, indices}, nil
 }
 
-func (key *BlissPrivateKey) SignAgainstSideChannel(msg []byte, entropy *sampler.Entropy) (*BlissSignature, error) {
+func (key *PrivateKey) SignAgainstSideChannel(msg []byte, entropy *sampler.Entropy) (*Signature, error) {
 	kappa := key.Param().Kappa
 	version := key.Param().Version
 	Binf := key.Param().Binf
@@ -244,10 +244,10 @@ restart:
 	if z1.Norm2()+y2.Norm2() > int32(Bl2) {
 		goto restart
 	}
-	return &BlissSignature{z1, z2, indices}, nil
+	return &Signature{z1, z2, indices}, nil
 }
 
-func (key *BlissPublicKey) Verify(msg []byte, sig *BlissSignature) (bool, error) {
+func (key *PublicKey) Verify(msg []byte, sig *Signature) (bool, error) {
 	if key.a.Param().Version != sig.z1.Param().Version {
 		return false, fmt.Errorf("Mismatched signature version")
 	}

@@ -2,6 +2,7 @@ package bliss
 
 import (
 	"fmt"
+	"github.com/LoCCS/bliss/params"
 	"github.com/LoCCS/bliss/sampler"
 	_ "io/ioutil"
 	"reflect"
