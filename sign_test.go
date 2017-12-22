@@ -33,25 +33,6 @@ func TestSignVerify(t *testing.T) {
 		if err != nil {
 			t.Errorf("Failed to generate signature for version %d: %s", i, err.Error())
 		}
-		/*
-			z1data := sig.z1.GetData()
-			z2data := sig.z2.GetData()
-			fmt.Printf("z1: ")
-			for j := 0; j < len(z1data); j++ {
-				fmt.Printf("%d ", z1data[j])
-			}
-			fmt.Printf("\n")
-			fmt.Printf("z2: ")
-			for j := 0; j < len(z2data); j++ {
-				fmt.Printf("%d ", z2data[j])
-			}
-			fmt.Printf("\n")
-			fmt.Printf("c: ")
-			for j := 0; j < len(sig.c); j++ {
-				fmt.Printf("%d ", sig.c[j])
-			}
-			fmt.Printf("\n")
-		*/
 		_, err = pub.Verify(msg, sig)
 		if err != nil {
 			t.Errorf("Failed to verify signature for version %d: %s", i, err.Error())
@@ -81,25 +62,6 @@ func TestSignVerifyAgainstChannel(t *testing.T) {
 		if err != nil {
 			t.Errorf("Failed to generate signature for version %d: %s", i, err.Error())
 		}
-		/*
-			z1data := sig.z1.GetData()
-			z2data := sig.z2.GetData()
-			fmt.Printf("z1: ")
-			for j := 0; j < len(z1data); j++ {
-				fmt.Printf("%d ", z1data[j])
-			}
-			fmt.Printf("\n")
-			fmt.Printf("z2: ")
-			for j := 0; j < len(z2data); j++ {
-				fmt.Printf("%d ", z2data[j])
-			}
-			fmt.Printf("\n")
-			fmt.Printf("c: ")
-			for j := 0; j < len(sig.c); j++ {
-				fmt.Printf("%d ", sig.c[j])
-			}
-			fmt.Printf("\n")
-		*/
 		_, err = pub.Verify(msg, sig)
 		if err != nil {
 			t.Errorf("Failed to verify signature for version %d: %s", i, err.Error())
