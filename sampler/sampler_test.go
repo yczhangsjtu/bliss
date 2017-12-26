@@ -180,7 +180,7 @@ func BenchmarkSampleGaussCt(b *testing.B) {
 	}
 }
 
-func BenchmarkSampleGaussCtAlpha(b *testing.B) {
+func BenchmarkSampleGaussCtSplit(b *testing.B) {
 	seed := make([]uint8, SHA_512_DIGEST_LENGTH)
 	for i := 0; i < len(seed); i++ {
 		seed[i] = uint8(i % 8)
@@ -194,24 +194,6 @@ func BenchmarkSampleGaussCtAlpha(b *testing.B) {
 		b.Errorf("Failed to create sampler: %s", err.Error())
 	}
 	for i := 0; i < b.N; i++ {
-		sampler.SampleGaussCtAlpha()
-	}
-}
-
-func BenchmarkSampleGaussCtBeta(b *testing.B) {
-	seed := make([]uint8, SHA_512_DIGEST_LENGTH)
-	for i := 0; i < len(seed); i++ {
-		seed[i] = uint8(i % 8)
-	}
-	entropy, err := NewEntropy(seed)
-	if err != nil {
-		b.Errorf("Failed to create entropy: %s", err.Error())
-	}
-	sampler, err := New(params.BLISS_B_4, entropy)
-	if err != nil {
-		b.Errorf("Failed to create sampler: %s", err.Error())
-	}
-	for i := 0; i < b.N; i++ {
-		sampler.SampleGaussCtBeta()
+		sampler.SampleGaussCtSplit()
 	}
 }
