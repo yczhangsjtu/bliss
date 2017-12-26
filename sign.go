@@ -187,22 +187,23 @@ func (key *PrivateKey) SignAgainstSideChannel(msg []byte, entropy *sampler.Entro
 	}
 	hash := sha3.Sum512(msg)
 restart:
-	y1alpha := poly.GaussPolyAlpha(version, sampler)
-	y2alpha := poly.GaussPolyAlpha(version, sampler)
-	y1beta := poly.GaussPolyBeta(version, sampler)
-	y2beta := poly.GaussPolyBeta(version, sampler)
-	valpha, err := y1alpha.MultiplyNTT(key.a)
-	vbeta, err := y1beta.MultiplyNTT(key.a)
-	if err != nil {
-		return nil, err
+	y1s := poly.GaussPolySplit(version, sampler)
+	y2s := poly.GaussPolySplit(version, sampler)
+	m := len(y1s)
+	vs := make([]*poly.PolyArray, m)
+	for i := 0; i < m; i++ {
+		vs[i], err = y1s[i].MultiplyNTT(key.a)
+		if err != nil {
+			return nil, err
+		}
+		vs[i].ScalarMul(2)
+		vs[i].ScalarMul(int32(key.Param().OneQ2))
+		vs[i].Inc(y2s[i])
 	}
-	valpha.ScalarMul(2)
-	vbeta.ScalarMul(2)
-	valpha.ScalarMul(int32(key.Param().OneQ2))
-	vbeta.ScalarMul(int32(key.Param().OneQ2))
-	valpha.Inc(y2alpha)
-	vbeta.Inc(y2beta)
-	v := valpha.Add(vbeta)
+	v := vs[0]
+	for i := 1; i < m; i++ {
+		v.Inc(vs[i])
+	}
 	v = v.Mod2Q()
 	dv := v.DropBits().ModP()
 	indices := computeC(kappa, dv, hash[:])
@@ -216,16 +217,18 @@ restart:
 	}
 	var z1, z2 *poly.PolyArray
 	b := entropy.Bit()
+	z1 = y1s[0]
+	z2 = y2s[0]
 	if b {
-		z1 = y1alpha.Sub(v1)
-		z2 = y2alpha.Sub(v2)
-		z1 = z1.Add(y1beta)
-		z2 = z2.Add(y2beta)
+		z1.Dec(v1)
+		z2.Dec(v2)
 	} else {
-		z1 = y1alpha.Add(v1)
-		z2 = y2alpha.Add(v2)
-		z1 = z1.Add(y1beta)
-		z2 = z2.Add(y2beta)
+		z1.Inc(v1)
+		z2.Inc(v2)
+	}
+	for i := 1; i < m; i++ {
+		z1.Inc(y1s[i])
+		z2.Inc(y2s[i])
 	}
 	prodZV := z1.InnerProduct(v1) + z2.InnerProduct(v2)
 	if !sampler.SampleBerCosh(prodZV) {

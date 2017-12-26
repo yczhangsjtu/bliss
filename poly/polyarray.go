@@ -113,30 +113,27 @@ func GaussPoly(version int, s *sampler.Sampler) *PolyArray {
 }
 
 // For splitted version
-func GaussPolyAlpha(version int, s *sampler.Sampler) *PolyArray {
-	p, err := New(version)
-	if err != nil {
-		return nil
+func GaussPolySplit(version int, s *sampler.Sampler) []*PolyArray {
+	m := s.GetM()
+	ret := make([]*PolyArray, m)
+	param := params.GetParam(version)
+	if param == nil {
+		return []*PolyArray{}
 	}
-	n := p.param.N
-	v := make([]int32, n)
-	for i := 0; i < int(n); i++ {
-		v[i] = s.SampleGaussCtAlpha()
+	n := param.N
+	for i := 0; i < m; i++ {
+		p, err := NewPolyArray(param)
+		if err != nil {
+			return []*PolyArray{}
+		}
+		ret[i] = p
 	}
-	p.SetData(v)
-	return p
-}
-
-func GaussPolyBeta(version int, s *sampler.Sampler) *PolyArray {
-	p, err := New(version)
-	if err != nil {
-		return nil
+	for j := 0; j < int(n); j++ {
+		res := s.SampleGaussCtSplit()
+		for i := 0; i < m; i++ {
+			v := ret[i].GetData()
+			v[j] = res[i]
+		}
 	}
-	n := p.param.N
-	v := make([]int32, n)
-	for i := 0; i < int(n); i++ {
-		v[i] = s.SampleGaussCtBeta()
-	}
-	p.SetData(v)
-	return p
+	return ret
 }

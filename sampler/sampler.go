@@ -260,6 +260,10 @@ func (sampler *Sampler) sampleGaussCt(ksigma uint16, ksigmabits uint16, table []
 	}
 }
 
+func (sampler *Sampler) GetM() int {
+	return len(sampler.ells)
+}
+
 func (sampler *Sampler) SampleGaussCt() int32 {
 	return sampler.sampleGaussCt(sampler.kSigma, sampler.kSigmaBits, sampler.ctable, sampler.ell)
 }
